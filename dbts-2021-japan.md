@@ -55,7 +55,17 @@ NOTES:
 
 `kubectl --namespace yb-demo port-forward svc/yb-tservers 9000:9000`
 
+![image](https://user-images.githubusercontent.com/1793451/141234198-1b8d856b-51ec-468a-b7db-23c056da90b3.png)
 
+4つのtableに、それぞれ6つの`tablet`があることがわかる
+
+
+connect to use ysql/ycql shell in each node.
+
+```
+$ kubectl exec -n yb-demo -it yb-tserver-0 -- ysqlsh -h yb-tserver-0.yb-tservers.yb-demo
+
+```
 
 
 

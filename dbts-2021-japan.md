@@ -4,11 +4,20 @@
 
 # Demo Scenario
 
+
+- minikube
+
+helm repo list
+
+
+
+- kubectl create namespace yb-demo
+
 ```
 % helm install yb-demo yugabytedb/yugabyte \
 --set resource.master.requests.cpu=0.5,resource.master.requests.memory=0.5Gi,\
 resource.tserver.requests.cpu=0.5,resource.tserver.requests.memory=0.5Gi,\
-replicas.master=1,replicas.tserver=3 --namespace yb-demo
+replicas.master=3,replicas.tserver=3 --namespace yb-demo
 W1111 12:22:11.374918   60910 warnings.go:70] policy/v1beta1 PodDisruptionBudget is deprecated in v1.21+, unavailable in v1.25+; use policy/v1 PodDisruptionBudget
 W1111 12:22:11.377085   60910 warnings.go:70] policy/v1beta1 PodDisruptionBudget is deprecated in v1.21+, unavailable in v1.25+; use policy/v1 PodDisruptionBudget
 W1111 12:22:11.404141   60910 warnings.go:70] policy/v1beta1 PodDisruptionBudget is deprecated in v1.21+, unavailable in v1.25+; use policy/v1 PodDisruptionBudget
@@ -60,6 +69,8 @@ NOTES:
 4つのtableに、それぞれ6つの`tablet`があることがわかる
 
 
+
+
 connect to use ysql/ycql shell in each node.
 
 ```
@@ -67,6 +78,18 @@ $ kubectl exec -n yb-demo -it yb-tserver-0 -- ysqlsh -h yb-tserver-0.yb-tservers
 
 ```
 
+connect to yugabyte shell
+
+```
+kubectl -n yb-demo exec -it yb-tserver-0 -- ycqlsh yb-tserver-0
+```
+
+```
+kubectl -n yb-demo get pods
+```
 
 
+```
+kubectl -n yb-demo delete pod yb-tserver-2
+```
 

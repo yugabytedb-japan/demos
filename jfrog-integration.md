@@ -861,3 +861,58 @@ artifactory=> \di
  public | watches_pk                     | index | artifactory | watches
 (171 rows)
 ```
+
+
+### 5th try.... almost done?
+
+checking the table mis match in above then, add the schema in `artifactory-storage-db-7.35.2.jar` in `/artifactory/app/artifactory/tomcat/webapps/artifactory/WEB-INF/lib/`
+
+```
+tichimura@ artifactory-storage-db-7.35.2 % ls conversion
+derby		mssql		mysql		oracle		postgresql
+tichimura@ artifactory-storage-db-7.35.2 % ls -1 conversion/postgresql
+postgresql_v103_binaries_tasks.sql
+postgresql_v109_add_distributed_locks_lock_key_idx.sql
+postgresql_v111_prepare_change_node_props_node_prop_value_idx.sql
+postgresql_v112_alter_node_props_node_prop_value_idx.sql
+postgresql_v113_prepare_change_node_props_prop_key_value_idx.sql
+postgresql_v114_alter_node_props_prop_key_value_idx.sql
+postgresql_v115_prepare_change_node_props_prop_value_key_idx.sql
+postgresql_v116_alter_node_props_prop_value_key_idx.sql
+postgresql_v120_prepare_change_node_props_node_prop_value_idx.sql
+postgresql_v121_alter_node_props_node_prop_value_idx.sql
+postgresql_v122_prepare_change_node_props_prop_key_value_idx.sql
+postgresql_v123_alter_node_props_prop_key_value_idx.sql
+postgresql_v124_prepare_change_node_props_prop_value_key_idx.sql
+postgresql_v125_alter_node_props_prop_value_key_idx.sql
+postgresql_v18_ui_session.sql
+postgresql_v20_ui_session_attributes.sql
+postgresql_v26_node_props_index.sql
+postgresql_v27_replication_errors.sql
+postgresql_v32_node_event_cursor_table.sql
+postgresql_v33_node_event_priorities_table.sql
+postgresql_v34_migration_status_table.sql
+postgresql_v35_create_jobs_table.sql
+postgresql_v550c.sql
+postgresql_v550d.sql
+postgresql_v550e.sql
+postgresql_v570a.sql
+postgresql_v660.sql
+postgresql_v78_change_nodes_node_name_idx.sql
+postgresql_v79_change_nodes_node_path_idx.sql
+postgresql_v80_change_nodes_node_repo_path_idx.sql
+postgresql_v82_alter_distributed_locks_set_unlogged.sql
+postgresql_v87_node_events_tmp_table.sql
+tichimura@ artifactory-storage-db-7.35.2 % ls postgresql
+postgresql.sql
+```
+
+also work-around the `alter index`, and `create unlogging table`, `create index CONCURRENTLY` to remove the unsupported options.
+especially for `alter index`, i changed the contents to do `drop index` first, then `create index`, so the contents had been hanged to exchange the query before/after. ( query in v122 -> v123, query in v123(delete the `alter index`) -> v122...
+
+log file is [here](https://gist.githubusercontent.com/tichimura/0d27498bce45bb2d43253416e2d97d93/raw/05dcbadfef93937eca0f6d74c289586e265bfece/jfrog-yb-5th-manual-db-add-console.log)
+
+
+```
+
+```

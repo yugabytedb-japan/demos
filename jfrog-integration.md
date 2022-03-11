@@ -345,6 +345,7 @@ The detail requirements are listed in JFrog's [webpages](https://www.jfrog.com/c
 ```
 
 ### missing `artifactory_servers`
+details are here https://gist.github.com/tichimura/0d27498bce45bb2d43253416e2d97d93
 
 ```
 \d artifactory_servers

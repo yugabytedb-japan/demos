@@ -590,6 +590,8 @@ artifactory=> \di
 
 ## schema in yugabytedb ( restart after manually adding `artifactory_servers`)
 
+logs: [here](https://gist.githubusercontent.com/tichimura/0d27498bce45bb2d43253416e2d97d93/raw/3b1ddb8b5035a5f58af35603cf8922c6b8a2b6ea/jfrog-yb-3rd-restart-with-adding-table-console.log)
+
 ### tables
 
 ```

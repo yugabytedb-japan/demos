@@ -367,3 +367,12 @@ details are here https://gist.github.com/tichimura/0d27498bce45bb2d43253416e2d97
 Indexes:
     "artifactory_servers_pk" PRIMARY KEY, btree (server_id)
 ```
+
+```
+ \d artifactory_servers_pk
+         Index "public.artifactory_servers_pk"
+  Column   |          Type          | Key? | Definition
+-----------+------------------------+------+------------
+ server_id | character varying(128) | yes  | server_id
+primary key, btree, for table "public.artifactory_servers"
+```

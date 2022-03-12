@@ -4,7 +4,109 @@
 
 The detail requirements are listed in JFrog's [webpages](https://www.jfrog.com/confluence/display/JFROG/Configuring+the+Database#ConfiguringtheDatabase-DatabaseConnectionSettings).
 
-## schema in postgresql
+## Deploy JFrog Artifactory on Mac M1 Chip
+
+Refer to [Documentation](https://www.jfrog.com/confluence/display/JFROG/Installing+Artifactory#InstallingArtifactory-Mac(Darwin)Installation)
+
+1. Using rosetta for Mac M1 Chip
+
+    ```
+    % arch -x86_64 zsh
+    % uname -m
+    x86_64
+    ```
+    
+1. download binary and extract it
+
+
+    At this moment, we can download the Mac version of `jfrog-artifactory-oss-7.35.2-darwin.tar.gz`.
+
+    ```
+    mkdir jfrog-mac
+    mv jfrog-artifactory-oss-7.35.2-darwin.tar.gz jfrog-mac
+    cd jfrog-mac
+    export JFROG_HOME=<full path to jfrog-mac>
+    tar -xvf jfrog-artifactory-oss-7.35.2-darwin.tar.gz
+    mv artifactory-oss-7.35.2 artifactory
+    chmod -R 777 $JFROG_HOME/artifactory/var
+    ```
+
+1. Create and Edit the `system.yaml`
+
+    ```
+    cd $JFROG_HOME/artifactory/var/etc/
+    touch ./system.yaml
+    ```
+
+    - Sample Configuration
+    ```
+    ## @formatter:off
+    ## JFROG ARTIFACTORY SYSTEM CONFIGURATION FILE
+    ## HOW TO USE: comment-out any field and keep the correct yaml indentation by deleting only the leading '#' character.
+
+    configVersion: 1
+    ## NOTE: JFROG_HOME is a place holder for the JFrog root directory containing the deployed product, the home directory for all JFrog products.
+    ## Replace JFROG_HOME with the real path!
+    ## For example, in RPM install, JFROG_HOME=/opt/jfrog
+
+    ## NOTE: Sensitive information such as passwords and join key are encrypted on first read.
+    ## NOTE: The provided commented key and value is the default.
+
+    ## SHARED CONFIGURATIONS
+    ## A shared section for keys across all services in this config
+    shared:
+        javaHome: "/Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home"
+        ## Database Configuration
+        database:
+            ## One of mysql, oracle, mssql, postgresql, mariadb
+            ## Default Embedded derby
+
+            ## FOR Yugabytedb
+            type: postgresql
+            driver: org.postgresql.Driver
+            url: "jdbc:postgresql://127.0.0.1:5433/artifactory"
+            username: artifactory
+            password: password # password should be encrypted after the installation
+
+            ## FOR Postgresql
+            #type: postgresql
+            #driver: org.postgresql.Driver
+            #url: "jdbc:postgresql://127.0.0.1:5432/artifactory"
+            #username: artifactory
+            #password: password # password should be encrypted after the installation
+    ```
+
+1. Setup Database
+
+    refer to the [documentation](https://www.jfrog.com/confluence/display/JFROG/PostgreSQL)
+    ```
+    CREATE USER artifactory WITH PASSWORD 'password';
+    CREATE DATABASE artifactory WITH OWNER=artifactory ENCODING='UTF8';
+    GRANT ALL PRIVILEGES ON DATABASE artifactory TO artifactory;
+    ```
+
+1. Run the command in below
+
+    ```
+    $JFROG_HOME/artifactory/app/bin/artifactoryctl start
+    ```
+
+1. Check the console.log
+
+    ```
+    tail -f $JFROG_HOME/artifactory/var/log/console.log
+    ```
+
+  - For postgresql, the installation should be finished successfully
+ 
+  - For YugabyteDB, we may face errors, and may need to setup the schema manually
+    
+    - [TODO] 
+    - run schema (postgresql/postgresql.sql) at first, then start the installation
+    - schema can be found at $JFROG_HOME/app/artifactory/tomcat/webapps/artifactory/WEB-INF/lib/artifactory-storage-db-7.35.2.jar
+ 
+
+## [GOAL] schema in postgresql(postgresql@11 on OSX with `brew install`)
 
 ### tables
 
@@ -342,6 +444,27 @@ The detail requirements are listed in JFrog's [webpages](https://www.jfrog.com/c
  public | watches_node_id_idx            | index | artifactory | watches
  public | watches_pk                     | index | artifactory | watches
 (220 rows)
+```
+
+## YugabyteDB Single Node Cluster
+
+### Configuration
+
+```
+tichimura@ ~ % yugabyted status
+
++--------------------------------------------------------------------------------------------------+
+|                                            yugabyted                                             |
++--------------------------------------------------------------------------------------------------+
+| Status              : Running. Leader Master is present                                          |
+| Web console         : http://127.0.0.1:7000                                                      |
+| JDBC                : jdbc:postgresql://127.0.0.1:5433/yugabyte?user=yugabyte&password=yugabyte  |
+| YSQL                : bin/ysqlsh   -U yugabyte -d yugabyte                                       |
+| YCQL                : bin/ycqlsh   -u cassandra                                                  |
+| Data Dir            : /Users/tichimura/var/data                                                  |
+| Log Dir             : /Users/tichimura/var/logs                                                  |
+| Universe UUID       : 61e4ef88-d6a0-42e4-9bb3-36fd98cc6433                                       |
++--------------------------------------------------------------------------------------------------+
 ```
 
 ### missing `artifactory_servers`
@@ -913,6 +1036,143 @@ especially for `alter index`, i changed the contents to do `drop index` first, t
 log file is [here](https://gist.githubusercontent.com/tichimura/0d27498bce45bb2d43253416e2d97d93/raw/05dcbadfef93937eca0f6d74c289586e265bfece/jfrog-yb-5th-manual-db-add-console.log)
 
 
-```
+## installing to multi node 
+
+### Cluster settings
+
 
 ```
+tichimura@ ~ % yb-ctl create --rf 3 --data_dir $HOME/demodir/jfrog-yugabyte-data
+Creating cluster.
+Waiting for cluster to be ready.
+----------------------------------------------------------------------------------------------------
+| Node Count: 3 | Replication Factor: 3                                                            |
+----------------------------------------------------------------------------------------------------
+| JDBC                : jdbc:postgresql://127.0.0.1:5433/yugabyte                                  |
+| YSQL Shell          : /opt/yugabyte-2.11.2.0/bin/ysqlsh                                          |
+| YCQL Shell          : /opt/yugabyte-2.11.2.0/bin/ycqlsh                                          |
+| YEDIS Shell         : /opt/yugabyte-2.11.2.0/bin/redis-cli                                       |
+| Web UI              : http://127.0.0.1:7000/                                                     |
+| Cluster Data        : /Users/tichimura/demodir/jfrog-yugabyte-data                               |
+----------------------------------------------------------------------------------------------------
+
+For more info, please use: yb-ctl --data_dir /Users/tichimura/demodir/jfrog-yugabyte-data status
+tichimura@ ~ % yb-ctl --data_dir $HOME/demodir/jfrog-yugabyte-data status
+----------------------------------------------------------------------------------------------------
+| Node Count: 3 | Replication Factor: 3                                                            |
+----------------------------------------------------------------------------------------------------
+| JDBC                : jdbc:postgresql://127.0.0.1:5433/yugabyte                                  |
+| YSQL Shell          : /opt/yugabyte-2.11.2.0/bin/ysqlsh                                          |
+| YCQL Shell          : /opt/yugabyte-2.11.2.0/bin/ycqlsh                                          |
+| YEDIS Shell         : /opt/yugabyte-2.11.2.0/bin/redis-cli                                       |
+| Web UI              : http://127.0.0.1:7000/                                                     |
+| Cluster Data        : /Users/tichimura/demodir/jfrog-yugabyte-data                               |
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+| Node 1: yb-tserver (pid 28968), yb-master (pid 28959)                                            |
+----------------------------------------------------------------------------------------------------
+| JDBC                : jdbc:postgresql://127.0.0.1:5433/yugabyte                                  |
+| YSQL Shell          : /opt/yugabyte-2.11.2.0/bin/ysqlsh                                          |
+| YCQL Shell          : /opt/yugabyte-2.11.2.0/bin/ycqlsh                                          |
+| YEDIS Shell         : /opt/yugabyte-2.11.2.0/bin/redis-cli                                       |
+| data-dir[0]         : /Users/tichimura/demodir/jfrog-yugabyte-data/node-1/disk-1/yb-data         |
+| yb-tserver Logs     : /Users/tichimura/demodir/jfrog-yugabyte-data/node-1/disk-1/yb-data/tserver/logs |
+| yb-master Logs      : /Users/tichimura/demodir/jfrog-yugabyte-data/node-1/disk-1/yb-data/master/logs |
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+| Node 2: yb-tserver (pid 28971), yb-master (pid 28962)                                            |
+----------------------------------------------------------------------------------------------------
+| JDBC                : jdbc:postgresql://127.0.0.2:5433/yugabyte                                  |
+| YSQL Shell          : /opt/yugabyte-2.11.2.0/bin/ysqlsh -h 127.0.0.2                             |
+| YCQL Shell          : /opt/yugabyte-2.11.2.0/bin/ycqlsh 127.0.0.2                                |
+| YEDIS Shell         : /opt/yugabyte-2.11.2.0/bin/redis-cli -h 127.0.0.2                          |
+| data-dir[0]         : /Users/tichimura/demodir/jfrog-yugabyte-data/node-2/disk-1/yb-data         |
+| yb-tserver Logs     : /Users/tichimura/demodir/jfrog-yugabyte-data/node-2/disk-1/yb-data/tserver/logs |
+| yb-master Logs      : /Users/tichimura/demodir/jfrog-yugabyte-data/node-2/disk-1/yb-data/master/logs |
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+| Node 3: yb-tserver (pid 28974), yb-master (pid 28965)                                            |
+----------------------------------------------------------------------------------------------------
+| JDBC                : jdbc:postgresql://127.0.0.3:5433/yugabyte                                  |
+| YSQL Shell          : /opt/yugabyte-2.11.2.0/bin/ysqlsh -h 127.0.0.3                             |
+| YCQL Shell          : /opt/yugabyte-2.11.2.0/bin/ycqlsh 127.0.0.3                                |
+| YEDIS Shell         : /opt/yugabyte-2.11.2.0/bin/redis-cli -h 127.0.0.3                          |
+| data-dir[0]         : /Users/tichimura/demodir/jfrog-yugabyte-data/node-3/disk-1/yb-data         |
+| yb-tserver Logs     : /Users/tichimura/demodir/jfrog-yugabyte-data/node-3/disk-1/yb-data/tserver/logs |
+| yb-master Logs      : /Users/tichimura/demodir/jfrog-yugabyte-data/node-3/disk-1/yb-data/master/logs |
+----------------------------------------------------------------------------------------------------
+```
+
+## dumping from the single node cluster and restore to new cluster
+
+1. dump data from single node cluster(127.0.0.1)
+    ```
+    ysql_dump artifactory --role=artifactory > jfrog.dump.1node.sql
+    ```
+
+2. restore to the new cluster
+
+    ```
+    % ysqlsh
+    ysqlsh (11.2-YB-2.11.2.0-b0)
+    Type "help" for help.
+
+    yugabyte=# \i jfrog.dump.1node.sql
+    SET
+    SET
+    SET
+    SET
+    SET
+     set_config
+    ------------
+
+    (1 row)
+
+    SET
+    SET
+    SET
+    SET
+    SET
+    ...
+    ```
+
+    - some errors are happened
+    ```
+    ysqlsh:jfrog.dump.1node.sql:59: WARNING:  storage parameter fillfactor is unsupported, ignoring
+    ...
+    ysqlsh:jfrog.dump.1node.sql:320: WARNING:  storage parameter fillfactor is unsupported, ignoring
+    ```
+    
+    each of errors are for these tables
+    
+    ```
+    CREATE TABLE public.access_distributed_lock (
+        lock_name character varying(40) NOT NULL,
+        owner character varying(255) NOT NULL,
+        modified bigint NOT NULL,
+        CONSTRAINT access_distributed_lock_key_pk PRIMARY KEY((lock_name) HASH)
+    )
+    WITH (fillfactor='80');    
+    ```
+    
+    ```
+    CREATE TABLE public.access_topology (
+        endpoint_id bigint NOT NULL,
+        service_id character varying(255) NOT NULL,
+        node_id character varying(255) NOT NULL,
+        created bigint NOT NULL,
+        ip character varying(64) NOT NULL,
+        port integer NOT NULL,
+        is_secure smallint NOT NULL,
+        paths character varying(4000) NOT NULL,
+        state character varying(32) NOT NULL,
+        last_updated bigint NOT NULL,
+        router_id character varying(255) NOT NULL,
+        CONSTRAINT access_topology_pk PRIMARY KEY((endpoint_id) HASH)
+    )
+    WITH (fillfactor='80');    
+    ```
+    
+1. start artifactory and see the logs.
+
+

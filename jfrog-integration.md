@@ -1187,6 +1187,7 @@ tichimura@ ~ % yb-ctl --data_dir $HOME/demodir/jfrog-yugabyte-data status
     
 ## Checking the installation
 
+refer to [link](https://github.com/DevOpsTutorials/artifactory-tutorial)
 
 1. Login to the UI
 

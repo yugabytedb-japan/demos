@@ -1110,7 +1110,7 @@ tichimura@ ~ % yb-ctl --data_dir $HOME/demodir/jfrog-yugabyte-data status
     ysql_dump artifactory --role=artifactory > jfrog.dump.1node.sql
     ```
 
-2. restore to the new cluster
+1. restore to the new cluster
 
     ```
     % ysqlsh
@@ -1176,3 +1176,13 @@ tichimura@ ~ % yb-ctl --data_dir $HOME/demodir/jfrog-yugabyte-data status
 1. start artifactory and see the logs.
 
 
+    ```
+    % $JFROG_HOME/artifactory/app/bin/artifactoryctl start
+    ```
+    
+    ```
+    % tail -f $JFROG_HOME/artifactory/var/log/console.log
+    ```
+    
+    
+    

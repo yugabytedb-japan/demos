@@ -1185,4 +1185,26 @@ tichimura@ ~ % yb-ctl --data_dir $HOME/demodir/jfrog-yugabyte-data status
     ```
     
     
+## Checking the installation
+
+
+1. Login to the UI
+
+    - default login (admin/password)
     
+<img width="1487" alt="Screen Shot 2022-03-14 at 6 32 11" src="https://user-images.githubusercontent.com/1793451/158083028-5f9a196e-6339-470b-a50d-70977c899bfc.png">
+
+        -  will need to update teh default password
+
+1. Create Repository
+    
+<img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/158083114-567e12cc-6074-4aba-a940-ee1e52ec70a9.png">
+
+<img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/158083145-8d88f011-203a-4ae8-92ee-d9293a50f996.png">
+
+1. Upload files
+
+<img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/158083175-5cf447f1-3a44-4463-bbfc-029644ff2c8d.png">
+
+<img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/158083183-c5ca28b3-6c25-4e7e-b4e7-5009d58cbc16.png">
+

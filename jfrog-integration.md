@@ -1209,3 +1209,5 @@ refer to [link](https://github.com/DevOpsTutorials/artifactory-tutorial)
 
 <img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/158083183-c5ca28b3-6c25-4e7e-b4e7-5009d58cbc16.png">
 
+1. Download the uploaded data from artifactory
+

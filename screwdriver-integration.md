@@ -1,19 +1,44 @@
 
+## Reference
+
+  1. [Getting Started Developing](https://docs.screwdriver.cd/about/contributing/getting-started-developing#developing-locally)
+  3. [ui](https://github.com/screwdriver-cd/ui)
+  4. [screwdriver](https://github.com/screwdriver-cd/screwdriver)
+  5. [store](https://github.com/screwdriver-cd/store)
+
+## Setup for Mac OSX
+
+- edit `/etc/hosts` 
+
+  - add an entry in below
+
+  ```
+  127.0.0.1 sd.screwdriver.cd
+  ```
+  
+- architecture
+
+  ```
+  % uname -m
+  arm64  
+  ```
+  
+  - you may need to run with x86_64 with Docker/Docker Desktop
 
 
+## Screwdriver Setup
 
-## Step 5
-
-### setup npm
+### setup node and npm (for ember-cli )
 
 
   https://github.com/ember-cli/ember-cli/blob/master/docs/node-support.md
    
   ```
-  node -v
-  npm -v
+  % node -v
+  v14.19.0
+  % npm -v
+  6.14.16
   ```
-
 
 ### run in `ui`
 
@@ -28,6 +53,24 @@
    ```
    npm install -g ember-cli
    ```
+   
+ - edit `config/local.js`
+
+    - slightly differed from 
+    
+    ```
+    'use strict';
+
+    const SDAPI_HOSTNAME = 'http://sd.screwdriver.cd:9001';
+    const SDSTORE_HOSTNAME = 'http://sd.screwdriver.cd:9002';
+
+    const APP_CONFIG = {
+      SDAPI_HOSTNAME,
+      SDSTORE_HOSTNAME
+    };
+
+    module.exports = APP_CONFIG;
+    ```
 
 ### run in `screwdriver`
 
@@ -77,6 +120,15 @@
                 oauthClientSecret: <NEED_TO_ADD>
                 secret: <MAY_NEED_TO_ADD>
 
+    ecosystem:
+      # Externally routable URL for the User Interface
+      ui: http://sd.screwdriver.cd:4200
+
+      # Externally routable URL for the Artifact Store
+      store: http://sd.screwdriver.cd:9002
+
+      allowCors: ['http://sd.screwdriver.cd', 'http://sd.screwdriver.cd:9001']
+  
     datastore:
       plugin: sequelize
       sequelize:
@@ -323,3 +375,78 @@ Run `npm audit` for details.
 
 {"level":"info","message":"Server running at http://localhost","timestamp":"2022-03-16T06:08:48.906Z"}
 ```
+
+## QuickStart
+
+- fork, and clone the sample apps
+
+  ```
+  % git clone https://github.com/tichimura/quickstart-generic.git
+  Cloning into 'quickstart-generic'...
+  remote: Enumerating objects: 31, done.
+  remote: Total 31 (delta 0), reused 0 (delta 0), pack-reused 31
+  Receiving objects: 100% (31/31), 19.35 KiB | 6.45 MiB/s, done.
+  Resolving deltas: 100% (12/12), done.
+  tichimura@ screwdriver % cd quickstart-generic
+  tichimura@ quickstart-generic % ls
+  LICENSE			Makefile		README.md		my_script.sh		screwdriver.yaml  
+  ```
+  
+  - edit `screwdriver.yaml`
+
+  ```YAML
+  # Shared definition block
+  # This is where you would define any attributes that all your jobs will
+  # inherit. In our example, we state that all our Jobs will use the same Docker
+  # container for building in.
+  shared:
+    # Docker image to use as the desired build container. This typically takes the
+    # form of "repo_name". Alternatively, you can define the image as
+    # "repo_name:tag_label".
+    #
+    # (Source: https://hub.docker.com/r/library/buildpack-deps/)
+    image: buildpack-deps
+
+  # Job definition block
+  # "main" is a default job that all pipelines have
+  jobs:
+    # Jobs are defined by name.
+    # All pipelines have "main" implicitly defined. The definitions in your
+    # screwdriver.yaml file will override the implied defaults.
+    main:
+      # Requires is a single job name or array of job names that will trigger the job to run.
+      # Jobs defined with "requires: ~pr" are started by pull-request events.
+      # Jobs defined with "requires: ~commit" are started by push events.
+      # Jobs defined with "requires: ~sd@123:main" are started by job "main" from pipeline "123".
+      # Jobs defined with "requires: main" are started after "main" is done.
+      # Jobs defined with "requires: [deploy-west, deploy-east] are started after "deploy-west" and "deploy-east" are both done running successfully.
+      requires: [~pr, ~commit]
+      # Steps is the list of commands to execute.
+      steps:
+        # Each step takes the form "step_name: command_to_run".
+        # The "step_name" is a convenient label to reference it by. The
+        # "command_to_run" is the single command that is executed during this
+        # step. Environment variables will be passed between steps, within
+        # the same job (as shown below).
+        - export: export GREETING="Hello, world!"
+        - hello: echo $GREETING
+        # Metadata is a structured key/value storage of relevant information about a build.
+        # Metadata will be shared with subsequent builds in the same workflow.
+        # You can set any key using the command "meta set <key> <value>".
+        - set-metadata: meta set example.coverage 99.95
+    # We define another Job called "second_job". In this Job, we intend on running
+    # a different set of commands.
+    second_job:
+      requires: main
+      steps:
+        # The "make_target" step calls a Makefile target to perform some set of
+        # actions. This is incredibly useful when you need to perform a multi-line
+        # command.
+        - make_target: make greetings
+        # You can get metadata that was set using the command "meta get <key>".
+        - get-metadata: meta get example
+        # The "run_arbitrary_script" executes a script. This is an alternative to
+        # a Makefile target where you want to run a series of commands related to
+        # this step
+        - run_arbitrary_script: ./my_script.sh
+  ```

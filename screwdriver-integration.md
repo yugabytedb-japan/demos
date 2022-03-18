@@ -100,41 +100,260 @@ Run `npm audit` for details.
 
 ### run in `screwdriver`
 
-```
-% npm install
-npm WARN deprecated topo@3.0.3: This module has moved and is now available at @hapi/topo. Please update your dependencies as this version is no longer maintained an may contain bugs and security issues.
-npm WARN deprecated har-validator@5.1.5: this library is no longer supported
-npm WARN deprecated hoek@5.0.4: This version has been deprecated in accordance with the hapi support policy (hapi.im/support). Please upgrade to the latest version to get the best features, bug fixes, and security patches. If you are unable to upgrade at this time, paid support is available for older versions (hapi.im/commercial).
-npm WARN deprecated hoek@6.1.3: This module has moved and is now available at @hapi/hoek. Please update your dependencies as this version is no longer maintained an may contain bugs and security issues.
-npm WARN deprecated circular-json@0.3.3: CircularJSON is in maintenance only, flatted is its successor.
-npm WARN deprecated querystring@0.2.0: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
-npm WARN deprecated spdx@0.5.2: see spdx-expression-parse, spdx-satisfies, &c.
-npm WARN deprecated mkdirp@0.3.5: Legacy versions of mkdirp are no longer supported. Please update to mkdirp 1.x. (Note that the API surface has changed to use Promises in 1.x.)
-npm WARN deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
-npm WARN deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
-npm WARN deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
-npm WARN deprecated samsam@1.3.0: This package has been deprecated in favour of @sinonjs/samsam
-npm WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
-npm WARN deprecated node-pre-gyp@0.11.0: Please upgrade to @mapbox/node-pre-gyp: the non-scoped node-pre-gyp package is deprecated and only the @mapbox scoped package will recieve updates in the future
-npm WARN deprecated joi@13.7.0: This version has been deprecated in accordance with the hapi support policy (hapi.im/support). Please upgrade to the latest version to get the best features, bug fixes, and security patches. If you are unable to upgrade at this time, paid support is available for older versions (hapi.im/commercial).
-npm WARN deprecated tar@2.2.2: This version of tar is no longer supported, and will not receive security updates. Please upgrade asap.
-npm WARN deprecated cucumber@6.0.4: The npm package has moved to @cucumber/cucumber
-npm WARN deprecated core-js@2.6.12: core-js@<3.4 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Please, upgrade your dependencies to the actual version of core-js.
+- run `npm install` at `screwdriver`
 
-added 1092 packages, and audited 1159 packages in 2m
+  ```
+  % npm install
+  ```
 
-82 packages are looking for funding
-  run `npm fund` for details
+- To work with `postgresql` as a dialect, we need to add `pg`, `pg-hstore`, also `pg-native` just in case.
 
-30 vulnerabilities (20 moderate, 10 high)
+    - check this page [link](https://sequelize.org/master/manual/dialect-specific-things.html#postgresql)
+      - [pg](https://www.npmjs.com/package/pg) 
+      - [pg-hstore](https://www.npmjs.com/package/pg-hstore)
+      - [pg-native](https://www.npmjs.com/package/pg-native)
 
-To address issues that do not require attention, run:
-  npm audit fix
+- edit `config/local.yaml`
 
-To address all issues (including breaking changes), run:
-  npm audit fix --force
+  just followed [docs](https://docs.screwdriver.cd/about/contributing/getting-started-developing#developing-locally)
+  
+  ```
+  auth:
+    jwtPrivateKey: |
+        -----BEGIN RSA PRIVATE KEY-----        
+        <NEED_TO_ADD>
+        -----END RSA PRIVATE KEY-----    
+    jwtPublicKey: |
+        -----BEGIN PUBLIC KEY-----
+        <NEED_TO_ADD>
+        -----END PUBLIC KEY-----    
 
-```
+    httpd:
+      # Port to listen on
+      port: 9001
+
+      # Host to listen on (set to localhost to only accept connections from this machine)
+      host: 0.0.0.0
+
+      uri: http://0.0.0.0:9001
+
+    scms:
+        github:
+            plugin: github
+            config:
+                # github
+                oauthClientId: <NEED_TO_ADD>
+                oauthClientSecret: <NEED_TO_ADD>
+                secret: <MAY_NEED_TO_ADD>
+
+    datastore:
+      plugin: sequelize
+      sequelize:
+        dialect: postgres
+        database: screwdriver
+        username: yugabyte
+        host: 127.0.0.1
+        port: 5433
+    ## if postgresql
+    #    dialect: 'postgres'
+    #    database: 'screwdriver'
+    #    username: 'tichimura'
+    #    password:
+    #    host: 127.0.0.1
+    #    port: 5432
+    ## if sqlite
+    #    dialect: sqlite
+    #    storage: ./mw-data/storage.db
+
+    ```
+
+- Results in PostgreSQL
+  
+  ```
+  % npm start
+
+  > screwdriver-api@4.1.0 start /Users/tichimura/demodir/screwdriver/screwdriver
+  > ./bin/server
+
+  (sequelize) Warning: PostgresSQL does not support 'INTEGER' with LENGTH, UNSIGNED or ZEROFILL. Plain 'INTEGER' will be used instead.
+  >> Check: http://www.postgresql.org/docs/9.4/static/datatype.html
+  {"level":"info","message":"Datastore ddl sync enabled: true","timestamp":"2022-03-17T23:13:58.675Z"}
+  {"level":"info","message":"Server running at http://0.0.0.0:9001","timestamp":"2022-03-17T23:13:59.347Z"}
+  ```
+
+
+  ```
+  screwdriver=# \d
+                    List of relations
+   Schema |         Name         |   Type   |   Owner
+  --------+----------------------+----------+-----------
+   public | banners              | table    | tichimura
+   public | banners_id_seq       | sequence | tichimura
+   public | buildClusters        | table    | tichimura
+   public | buildClusters_id_seq | sequence | tichimura
+   public | builds               | table    | tichimura
+   public | builds_id_seq        | sequence | tichimura
+   public | collections          | table    | tichimura
+   public | collections_id_seq   | sequence | tichimura
+   public | commandTags          | table    | tichimura
+   public | commandTags_id_seq   | sequence | tichimura
+   public | commands             | table    | tichimura
+   public | commands_id_seq      | sequence | tichimura
+   public | events               | table    | tichimura
+   public | events_id_seq        | sequence | tichimura
+   public | jobs                 | table    | tichimura
+   public | jobs_id_seq          | sequence | tichimura
+   public | pipelines            | table    | tichimura
+   public | pipelines_id_seq     | sequence | tichimura
+   public | secrets              | table    | tichimura
+   public | secrets_id_seq       | sequence | tichimura
+   public | steps                | table    | tichimura
+   public | steps_id_seq         | sequence | tichimura
+   public | templateTags         | table    | tichimura
+   public | templateTags_id_seq  | sequence | tichimura
+   public | templates            | table    | tichimura
+   public | templates_id_seq     | sequence | tichimura
+   public | tokens               | table    | tichimura
+   public | tokens_id_seq        | sequence | tichimura
+   public | triggers             | table    | tichimura
+   public | triggers_id_seq      | sequence | tichimura
+   public | users                | table    | tichimura
+   public | users_id_seq         | sequence | tichimura
+  (32 rows)
+
+  ```
+
+
+- Results in PostgreSQL
+
+    ```
+    % npm start
+
+    > screwdriver-api@4.1.0 start /Users/tichimura/demodir/screwdriver/screwdriver
+    > ./bin/server
+
+    (sequelize) Warning: PostgresSQL does not support 'INTEGER' with LENGTH, UNSIGNED or ZEROFILL. Plain 'INTEGER' will be used instead.
+    >> Check: http://www.postgresql.org/docs/9.4/static/datatype.html
+    {"level":"info","message":"Datastore ddl sync enabled: true","timestamp":"2022-03-17T23:51:23.221Z"}
+    {"level":"info","message":"Server running at http://0.0.0.0:9001","timestamp":"2022-03-17T23:58:56.180Z"}
+    ```
+
+
+    ```
+    screwdriver=# \d
+                      List of relations
+     Schema |         Name         |   Type   |  Owner
+    --------+----------------------+----------+----------
+     public | banners              | table    | yugabyte
+     public | banners_id_seq       | sequence | yugabyte
+     public | buildClusters        | table    | yugabyte
+     public | buildClusters_id_seq | sequence | yugabyte
+     public | builds               | table    | yugabyte
+     public | builds_id_seq        | sequence | yugabyte
+     public | collections          | table    | yugabyte
+     public | collections_id_seq   | sequence | yugabyte
+     public | commandTags          | table    | yugabyte
+     public | commandTags_id_seq   | sequence | yugabyte
+     public | commands             | table    | yugabyte
+     public | commands_id_seq      | sequence | yugabyte
+     public | events               | table    | yugabyte
+     public | events_id_seq        | sequence | yugabyte
+     public | jobs                 | table    | yugabyte
+     public | jobs_id_seq          | sequence | yugabyte
+     public | pipelines            | table    | yugabyte
+     public | pipelines_id_seq     | sequence | yugabyte
+     public | secrets              | table    | yugabyte
+     public | secrets_id_seq       | sequence | yugabyte
+     public | steps                | table    | yugabyte
+     public | steps_id_seq         | sequence | yugabyte
+     public | templateTags         | table    | yugabyte
+     public | templateTags_id_seq  | sequence | yugabyte
+     public | templates            | table    | yugabyte
+     public | templates_id_seq     | sequence | yugabyte
+     public | tokens               | table    | yugabyte
+     public | tokens_id_seq        | sequence | yugabyte
+     public | triggers             | table    | yugabyte
+     public | triggers_id_seq      | sequence | yugabyte
+     public | users                | table    | yugabyte
+     public | users_id_seq         | sequence | yugabyte
+    (32 rows)
+
+    screwdriver=# \di
+                                       List of relations
+     Schema |                    Name                    | Type  |  Owner   |     Table
+    --------+--------------------------------------------+-------+----------+---------------
+     public | banners_is_active                          | index | yugabyte | banners
+     public | banners_message_createTime_type_key        | index | yugabyte | banners
+     public | banners_pkey                               | index | yugabyte | banners
+     public | buildClusters_name_scmContext_key          | index | yugabyte | buildClusters
+     public | buildClusters_pkey                         | index | yugabyte | buildClusters
+     public | build_clusters_name                        | index | yugabyte | buildClusters
+     public | builds_eventId_jobId_key                   | index | yugabyte | builds
+     public | builds_event_id_create_time                | index | yugabyte | builds
+     public | builds_job_id                              | index | yugabyte | builds
+     public | builds_parent_build_id                     | index | yugabyte | builds
+     public | builds_pkey                                | index | yugabyte | builds
+     public | builds_template_id                         | index | yugabyte | builds
+     public | collections_pkey                           | index | yugabyte | collections
+     public | collections_userId_name_key                | index | yugabyte | collections
+     public | collections_user_id                        | index | yugabyte | collections
+     public | commandTags_namespace_name_tag_key         | index | yugabyte | commandTags
+     public | commandTags_pkey                           | index | yugabyte | commandTags
+     public | command_tags_name                          | index | yugabyte | commandTags
+     public | command_tags_namespace                     | index | yugabyte | commandTags
+     public | command_tags_tag                           | index | yugabyte | commandTags
+     public | commands_name                              | index | yugabyte | commands
+     public | commands_namespace                         | index | yugabyte | commands
+     public | commands_namespace_version_name_key        | index | yugabyte | commands
+     public | commands_pkey                              | index | yugabyte | commands
+     public | events_createTime_pipelineId_sha_key       | index | yugabyte | events
+     public | events_create_time_pipeline_id             | index | yugabyte | events
+     public | events_group_event_id                      | index | yugabyte | events
+     public | events_parent_event_id                     | index | yugabyte | events
+     public | events_pipeline_id                         | index | yugabyte | events
+     public | events_pkey                                | index | yugabyte | events
+     public | events_type                                | index | yugabyte | events
+     public | jobs_name_pipelineId_key                   | index | yugabyte | jobs
+     public | jobs_pipeline_id_state                     | index | yugabyte | jobs
+     public | jobs_pkey                                  | index | yugabyte | jobs
+     public | jobs_state                                 | index | yugabyte | jobs
+     public | jobs_template_id                           | index | yugabyte | jobs
+     public | pipelines_pkey                             | index | yugabyte | pipelines
+     public | pipelines_scmUri_key                       | index | yugabyte | pipelines
+     public | pipelines_scm_uri                          | index | yugabyte | pipelines
+     public | pipelines_subscribed_scm_urls_with_actions | index | yugabyte | pipelines
+     public | secrets_pipelineId_name_key                | index | yugabyte | secrets
+     public | secrets_pipeline_id                        | index | yugabyte | secrets
+     public | secrets_pkey                               | index | yugabyte | secrets
+     public | steps_buildId_name_key                     | index | yugabyte | steps
+     public | steps_build_id                             | index | yugabyte | steps
+     public | steps_name                                 | index | yugabyte | steps
+     public | steps_pkey                                 | index | yugabyte | steps
+     public | templateTags_namespace_name_tag_key        | index | yugabyte | templateTags
+     public | templateTags_pkey                          | index | yugabyte | templateTags
+     public | template_tags_name                         | index | yugabyte | templateTags
+     public | template_tags_namespace                    | index | yugabyte | templateTags
+     public | template_tags_tag                          | index | yugabyte | templateTags
+     public | templates_name                             | index | yugabyte | templates
+     public | templates_name_version_namespace_key       | index | yugabyte | templates
+     public | templates_namespace                        | index | yugabyte | templates
+     public | templates_pkey                             | index | yugabyte | templates
+     public | tokens_hash                                | index | yugabyte | tokens
+     public | tokens_hash_key                            | index | yugabyte | tokens
+     public | tokens_pipeline_id                         | index | yugabyte | tokens
+     public | tokens_pkey                                | index | yugabyte | tokens
+     public | tokens_user_id                             | index | yugabyte | tokens
+     public | triggers_dest                              | index | yugabyte | triggers
+     public | triggers_pkey                              | index | yugabyte | triggers
+     public | triggers_src                               | index | yugabyte | triggers
+     public | triggers_src_dest_key                      | index | yugabyte | triggers
+     public | users_pkey                                 | index | yugabyte | users
+     public | users_scm_context                          | index | yugabyte | users
+     public | users_username                             | index | yugabyte | users
+     public | users_username_scmContext_key              | index | yugabyte | users
+    (69 rows)
+    ```
+
 
 ### run in `store`
 

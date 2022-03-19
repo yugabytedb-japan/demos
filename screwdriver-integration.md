@@ -1,10 +1,12 @@
 
 ## Reference
 
-  1. [Getting Started Developing](https://docs.screwdriver.cd/about/contributing/getting-started-developing#developing-locally)
-  3. [ui](https://github.com/screwdriver-cd/ui)
-  4. [screwdriver](https://github.com/screwdriver-cd/screwdriver)
-  5. [store](https://github.com/screwdriver-cd/store)
+  - Docs
+    1. [Getting Started Developing](https://docs.screwdriver.cd/about/contributing/getting-started-developing#developing-locally)
+  - Github
+    1. [screwdriver-cd/ui](https://github.com/screwdriver-cd/ui)
+    2. [screwdriver-cd/screwdriver](https://github.com/screwdriver-cd/screwdriver)
+    3. [screwdriver-cd/store](https://github.com/screwdriver-cd/store)
 
 ## Setup for Mac OSX
 
@@ -449,4 +451,50 @@ Run `npm audit` for details.
         # a Makefile target where you want to run a series of commands related to
         # this step
         - run_arbitrary_script: ./my_script.sh
+  ```
+  
+  ## Quickstart
+  
+  <img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/159113673-5291bd6f-1b61-4177-8cae-b11ea4088aff.png">
+  
+  - [INFO]the console log at `screwdriver` is like below
+  
+  ```
+  220319/082336.576, (1647678216576:Tomohiros-MacBook-Pro.local:48333:l0xeswh1:10000) [response,api,auth,context] http://sd.screwdriver.cd:9001: get /v4/auth/contexts {} 200 (6ms)
+  220319/082336.661, (1647678216661:Tomohiros-MacBook-Pro.local:48333:l0xeswh1:10001) [response] http://sd.screwdriver.cd:9001: options /v4/banners {} 204 (1ms)
+  {"level":"info","message":"Executed (default): SELECT \"id\", \"message\", \"isActive\", \"createTime\", \"createdBy\", \"type\" FROM \"banners\" AS \"banners\" ORDER BY \"banners\".\"id\" DESC;","timestamp":"2022-03-19T08:23:37.159Z"}
+  220319/082336.662, (1647678216662:Tomohiros-MacBook-Pro.local:48333:l0xeswh1:10002) [response,api,banners] http://sd.screwdriver.cd:9001: get /v4/banners {} 200 (498ms)  
+  ```
+
+  - create new pipeline
+
+  <img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/159113878-3c0a3272-7f01-4679-91c7-3970b893f00c.png">
+
+
+  <img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/159113929-86252e42-5061-4a8d-b788-754a11ea774d.png">
+  
+    this time, not choosing the `I will create the screwdriver.yaml  later`. 
+  
+  - now it moves to Pipeline page automatically.
+
+  <img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/159113989-1710e801-ff15-43bb-abda-bed6125f9c81.png">
+  
+  - click `Start` and see the console log
+
+  <img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/159114052-a3c92abe-e667-4553-bc39-4c678602553f.png">
+
+  - error has been shown
+
+  ```
+  {"level":"error","message":"Breaker with function function () { [native code] } was tripped on Sat, 19 Mar 2022 08:39:32 GMT","timestamp":"2022-03-19T08:39:32.421Z"}
+  {"level":"info","message":"Getting errors with [{\"url\":\"https://kubernetes.default/api/v1/namespaces/default/pods\",\"method\":\"POST\",\"json\":{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"name\":\"101-ye528\",\"labels\":{\"app\":\"screwdriver\",\"tier\":\"builds\",\"sdbuild\":\"101\"}},\"spec\":{\"serviceAccountName\":\"default\",\"automountServiceAccountToken\":false,\"terminationGracePeriodSeconds\":30,\"restartPolicy\":\"Never\",\"dnsPolicy\":\"ClusterFirst\",\"containers\":[{\"name\":\"101\",\"image\":\"buildpack-deps\",\"imagePullPolicy\":\"Always\",\"securityContext\":{\"privileged\":false},\"resources\":{\"limits\":{\"cpu\":\"2000m\",\"memory\":\"2Gi\"}},\"env\":[{\"name\":\"SD_HAB_ENABLED\",\"value\":\"true\"},{\"name\":\"SD_RUNTIME_CLASS\",\"value\":null},{\"name\":\"SD_PUSHGATEWAY_URL\",\"value\":null},{\"name\":\"SD_TERMINATION_GRACE_PERIOD_SECONDS\",\"value\":\"30\"},{\"name\":\"CONTAINER_IMAGE\",\"value\":\"buildpack-deps\"},{\"name\":\"SD_PIPELINE_ID\",\"value\":\"1\"},{\"name\":\"SD_BUILD_PREFIX\",\"value\":\"\"},{\"name\":\"NODE_ID\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"spec.nodeName\"}}},{\"name\":\"SD_BASE_COMMAND_PATH\",\"value\":\"/sd/commands/\"},{\"name\":\"SD_TEMP\",\"value\":\"/opt/sd_tmp\"}],\"command\":[\"/opt/sd/launcher_entrypoint.sh\"],\"args\":[\"/opt/sd/run.sh \\\"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MTAxLCJzY21Db250ZXh0IjoiZ2l0aHViOmdpdGh1Yi5jb20iLCJzY29wZSI6WyJ0ZW1wb3JhbCJdLCJpc1BSIjpmYWxzZSwiam9iSWQiOjEsImV2ZW50SWQiOjEwMSwicGlwZWxpbmVJZCI6MSwiaWF0IjoxNjQ3Njc5MTcyLCJleHAiOjE2NDc3MjIzNzIsImp0aSI6IjM1MzVhZmRjLTI1NjQtNGVjZC04OGNlLTAxNjg1NGI4ZTdjMiJ9.Td2hbLSs9C5OeSazu5NJ1Zm6QyVEcLQPIyRaZGsfItXN9_A_xYtEc1vKbe7a4HHzDcsT_qgU0rrVcQgG1dItcgydVnudFg4F-LQY0ZPcCnYn5Bh4brIV3e8ZdBleyPzOlPePYHub502AlE64waX8UpVhgGXN7J7_T9aeUIz90EDmOopc4WdYfDlGIoCFTXjxl67XnhSrdFere6IsZMuMc6Y_Sq_TpEl9otlPx5nW2Bv81BTOKbz_pvGvXIHq5ryiMvMeALLPoHo8wciVSfu3fVyVDQxQPjBgL5Meb6li_-LZDtj9nUNiFWR-hwvjDBKQTA71UQ8xNFs_39yBiTyVtA\\\" \\\"http://sd.screwdriver.cd:9001\\\" \\\"http://sd.screwdriver.cd:9002\\\" \\\"90\\\" \\\"101\\\" \\\"http://sd.screwdriver.cd:4200\\\"\\n\"],\"volumeMounts\":[{\"name\":\"podinfo\",\"mountPath\":\"/etc/podinfo\",\"readOnly\":true},{\"mountPath\":\"/opt/sd\",\"name\":\"screwdriver\",\"readOnly\":true},{\"mountPath\":\"/opt/sd_tmp\",\"name\":\"sdtemp\"},{\"mountPath\":\"/workspace\",\"name\":\"workspace\"}]}],\"initContainers\":[{\"name\":\"launcher-101\",\"image\":\"screwdrivercd/launcher:stable\",\"command\":[\"/bin/sh\",\"-c\",\"echo launcher_start_ts:`date \\\"+%s\\\"` > /workspace/metrics && if ! [ -f /opt/launcher/launch ]; then TEMP_DIR=`mktemp -d -p /opt/launcher` && cp -a /opt/sd/* $TEMP_DIR && mkdir -p $TEMP_DIR/hab && cp -a /hab/* $TEMP_DIR/hab && mv $TEMP_DIR/* /opt/launcher && rm -rf $TEMP_DIR || true; else ls /opt/launcher; fi; echo launcher_end_ts:`date \\\"+%s\\\"` >> /workspace/metrics\"],\"volumeMounts\":[{\"mountPath\":\"/opt/launcher\",\"name\":\"screwdriver\"},{\"mountPath\":\"/workspace\",\"name\":\"workspace\"}]}],\"volumes\":[{\"name\":\"podinfo\",\"downwardAPI\":{\"items\":[{\"path\":\"labels\",\"fieldRef\":{\"fieldPath\":\"metadata.labels\"}},{\"path\":\"annotations\",\"fieldRef\":{\"fieldPath\":\"metadata.annotations\"}}]}},{\"name\":\"screwdriver\",\"type\":\"DirectoryOrCreate\",\"hostPath\":{\"path\":\"/opt/screwdriver/sdlauncher/stable\"}},{\"name\":\"sdtemp\",\"type\":\"DirectoryOrCreate\",\"hostPath\":{\"path\":\"/opt/screwdriver/tmp_101\"}},{\"name\":\"workspace\",\"emptyDir\":{}}]}},\"headers\":{\"Authorization\":\"Bearer \"},\"https\":{\"rejectUnauthorized\":false}}]: Error: 500 Reason \"Internal server error\"","timestamp":"2022-03-19T08:39:32.421Z"}
+  {"level":"error","message":"Failed to run pod for build id:101: 500 Reason \"Internal server error\"","timestamp":"2022-03-19T08:39:32.423Z"}
+  220319/083932.423, (1647679168041:Tomohiros-MacBook-Pro.local:48333:l0xeswh1:10205) [request,server,error] data: Error: 500 Reason "Internal server error"
+      at throwError (/Users/tichimura/demodir/screwdriver/screwdriver/node_modules/screwdriver-request/index.js:14:17)
+      at /Users/tichimura/demodir/screwdriver/screwdriver/node_modules/screwdriver-request/index.js:56:28
+      at runMicrotasks (<anonymous>)
+      at processTicksAndRejections (internal/process/task_queues.js:95:5)
+  220319/083928.041, (1647679168041:Tomohiros-MacBook-Pro.local:48333:l0xeswh1:10205) [response,api,events] http://sd.screwdriver.cd:9001: post /v4/events {} 500 (4382ms)  
+  ```
+
   ```

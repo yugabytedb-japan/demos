@@ -111,7 +111,15 @@
       # Host to listen on (set to localhost to only accept connections from this machine)
       host: 0.0.0.0
 
-      uri: http://0.0.0.0:9001
+      uri: http://host.docker.internal:9001      
+
+    executor:
+        plugin: docker
+        docker:
+            enabled: true
+            options:
+                docker:
+                    socketPath: "/var/run/docker.sock"
 
     scms:
         github:
@@ -127,9 +135,9 @@
       ui: http://sd.screwdriver.cd:4200
 
       # Externally routable URL for the Artifact Store
-      store: http://sd.screwdriver.cd:9002
+      store: http://host.docker.internal:9002
 
-      allowCors: ['http://sd.screwdriver.cd', 'http://sd.screwdriver.cd:9001']
+      allowCors: ['http://sd.screwdriver.cd', 'http://host.docker.internal:9001']
   
     datastore:
       plugin: sequelize
@@ -483,7 +491,13 @@ Run `npm audit` for details.
 
   <img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/159114052-a3c92abe-e667-4553-bc39-4c678602553f.png">
 
-  - error has been shown
+
+  - Expected Results
+  
+  ![image](https://user-images.githubusercontent.com/1793451/159188926-810ab325-77ce-4220-80ea-1c27ba5568ea.png)
+
+
+  - [Troubleshooting] error has been shown
 
   ```
   {"level":"error","message":"Breaker with function function () { [native code] } was tripped on Sat, 19 Mar 2022 08:39:32 GMT","timestamp":"2022-03-19T08:39:32.421Z"}
@@ -496,5 +510,30 @@ Run `npm audit` for details.
       at processTicksAndRejections (internal/process/task_queues.js:95:5)
   220319/083928.041, (1647679168041:Tomohiros-MacBook-Pro.local:48333:l0xeswh1:10205) [response,api,events] http://sd.screwdriver.cd:9001: post /v4/events {} 500 (4382ms)  
   ```
+  
+  - change host name to `host.docker.internal` for `httpd.uri`, `ecosystem.store`, `ecosystem.allowCors`
 
   ```
+  httpd:
+    # Port to listen on
+    port: 9001
+
+    host: 0.0.0.0
+
+  #  uri: http://sd.screwdriver.cd:9001
+    uri: http://host.docker.internal:9001
+
+  ecosystem:
+    # Externally routable URL for the User Interface
+    ui: http://sd.screwdriver.cd:4200
+
+    # Externally routable URL for the Artifact Store
+    #store: http://sd.screwdriver.cd:9002
+    store: http://host.docker.internal:9002
+
+  #  allowCors: ['http://sd.screwdriver.cd', 'http://sd.screwdriver.cd:9001']
+    allowCors: ['http://sd.screwdriver.cd', 'http://host.docker.internal:9001']
+  
+  ```
+  
+  

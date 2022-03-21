@@ -457,8 +457,7 @@
 
 ## QuickStart Sample
 
-- Prerequirement
-- 
+- Pre-requirement
   - screwdriver(`screwdriver`, `ui`, `store`) has been running ( please see the above steps. )
   - yugabyteDB has been running ( it should have been running for screwdriver )
   - Docker environment has been available (in this work, we use Docker Desktop for Mac)

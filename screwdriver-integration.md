@@ -30,6 +30,40 @@
   
   - you may need to run with x86_64 with Docker/Docker Desktop
 
+- Docker Environment
+
+  ```
+  % docker version
+  Client:
+   Cloud integration: 1.0.17
+   Version:           20.10.8
+   API version:       1.41
+   Go version:        go1.16.6
+   Git commit:        3967b7d
+   Built:             Fri Jul 30 19:55:20 2021
+   OS/Arch:           darwin/arm64
+   Context:           default
+   Experimental:      true
+
+  Server: Docker Engine - Community
+   Engine:
+    Version:          20.10.8
+    API version:      1.41 (minimum version 1.12)
+    Go version:       go1.16.6
+    Git commit:       75249d8
+    Built:            Fri Jul 30 19:53:48 2021
+    OS/Arch:          linux/arm64
+    Experimental:     false
+   containerd:
+    Version:          1.4.9
+    GitCommit:        e25210fe30a0a703442421b0f60afac609f950a3
+   runc:
+    Version:          1.0.1
+    GitCommit:        v1.0.1-0-g4144b63
+   docker-init:
+    Version:          0.19.0
+    GitCommit:        de40ad0  
+  ```
 
 - `node` and `npm` setup ( fro ember-cli )
 
@@ -41,6 +75,75 @@
   % npm -v
   6.14.16
   ```
+  
+## configure YugabyteDB
+
+  - Create cluster on laptop
+  
+  ```
+  % yb-ctl create --rf 3
+  ```
+
+  ```
+  % yb-ctl status
+  ----------------------------------------------------------------------------------------------------
+  | Node Count: 3 | Replication Factor: 3                                                            |
+  ----------------------------------------------------------------------------------------------------
+  | JDBC                : jdbc:postgresql://127.0.0.1:5433/yugabyte                                  |
+  | YSQL Shell          : /opt/yugabyte-2.11.2.0/bin/ysqlsh                                          |
+  | YCQL Shell          : /opt/yugabyte-2.11.2.0/bin/ycqlsh                                          |
+  | YEDIS Shell         : /opt/yugabyte-2.11.2.0/bin/redis-cli                                       |
+  | Web UI              : http://127.0.0.1:7000/                                                     |
+  | Cluster Data        : /Users/tichimura/yugabyte-data                                             |
+  ----------------------------------------------------------------------------------------------------
+  ----------------------------------------------------------------------------------------------------
+  | Node 1: yb-tserver (pid 6264), yb-master (pid 6255)                                              |
+  ----------------------------------------------------------------------------------------------------
+  | JDBC                : jdbc:postgresql://127.0.0.1:5433/yugabyte                                  |
+  | YSQL Shell          : /opt/yugabyte-2.11.2.0/bin/ysqlsh                                          |
+  | YCQL Shell          : /opt/yugabyte-2.11.2.0/bin/ycqlsh                                          |
+  | YEDIS Shell         : /opt/yugabyte-2.11.2.0/bin/redis-cli                                       |
+  | data-dir[0]         : /Users/tichimura/yugabyte-data/node-1/disk-1/yb-data                       |
+  | yb-tserver Logs     : /Users/tichimura/yugabyte-data/node-1/disk-1/yb-data/tserver/logs          |
+  | yb-master Logs      : /Users/tichimura/yugabyte-data/node-1/disk-1/yb-data/master/logs           |
+  ----------------------------------------------------------------------------------------------------
+  ----------------------------------------------------------------------------------------------------
+  | Node 2: yb-tserver (pid 6267), yb-master (pid 6258)                                              |
+  ----------------------------------------------------------------------------------------------------
+  | JDBC                : jdbc:postgresql://127.0.0.2:5433/yugabyte                                  |
+  | YSQL Shell          : /opt/yugabyte-2.11.2.0/bin/ysqlsh -h 127.0.0.2                             |
+  | YCQL Shell          : /opt/yugabyte-2.11.2.0/bin/ycqlsh 127.0.0.2                                |
+  | YEDIS Shell         : /opt/yugabyte-2.11.2.0/bin/redis-cli -h 127.0.0.2                          |
+  | data-dir[0]         : /Users/tichimura/yugabyte-data/node-2/disk-1/yb-data                       |
+  | yb-tserver Logs     : /Users/tichimura/yugabyte-data/node-2/disk-1/yb-data/tserver/logs          |
+  | yb-master Logs      : /Users/tichimura/yugabyte-data/node-2/disk-1/yb-data/master/logs           |
+  ----------------------------------------------------------------------------------------------------
+  ----------------------------------------------------------------------------------------------------
+  | Node 3: yb-tserver (pid 6270), yb-master (pid 6261)                                              |
+  ----------------------------------------------------------------------------------------------------
+  | JDBC                : jdbc:postgresql://127.0.0.3:5433/yugabyte                                  |
+  | YSQL Shell          : /opt/yugabyte-2.11.2.0/bin/ysqlsh -h 127.0.0.3                             |
+  | YCQL Shell          : /opt/yugabyte-2.11.2.0/bin/ycqlsh 127.0.0.3                                |
+  | YEDIS Shell         : /opt/yugabyte-2.11.2.0/bin/redis-cli -h 127.0.0.3                          |
+  | data-dir[0]         : /Users/tichimura/yugabyte-data/node-3/disk-1/yb-data                       |
+  | yb-tserver Logs     : /Users/tichimura/yugabyte-data/node-3/disk-1/yb-data/tserver/logs          |
+  | yb-master Logs      : /Users/tichimura/yugabyte-data/node-3/disk-1/yb-data/master/logs           |
+  ----------------------------------------------------------------------------------------------------  
+  ```
+
+  - login via `ysqlsh` and create database for screwdriver (`screwdriver`)
+
+  ```
+  % ysqlsh
+  ysqlsh (11.2-YB-2.11.2.0-b0)
+  Type "help" for help.
+  yugabyte=# \conninfo
+  You are connected to database "yugabyte" as user "yugabyte" on host "localhost" at port "5433".
+  % create database screwdriver;
+  CREATE DATABASE
+  ```
+  
+  - Connection to database is managed by [Sequelize](https://sequelize.org/master/) and more details are shown in [link](https://github.com/screwdriver-cd/datastore-sequelize)
 
 ## configure screwdriver
 
@@ -177,65 +280,9 @@
     #    storage: ./mw-data/storage.db
 
     ```
+    more details for `datastore` plugin is listed [here](https://github.com/screwdriver-cd/guide/blob/master/docs/cluster-management/configure-api.md#datastore-plugin)
 
-- Results in PostgreSQL
-  
-  ```
-  % npm start
-
-  > screwdriver-api@4.1.0 start /Users/tichimura/demodir/screwdriver/screwdriver
-  > ./bin/server
-
-  (sequelize) Warning: PostgresSQL does not support 'INTEGER' with LENGTH, UNSIGNED or ZEROFILL. Plain 'INTEGER' will be used instead.
-  >> Check: http://www.postgresql.org/docs/9.4/static/datatype.html
-  {"level":"info","message":"Datastore ddl sync enabled: true","timestamp":"2022-03-17T23:13:58.675Z"}
-  {"level":"info","message":"Server running at http://0.0.0.0:9001","timestamp":"2022-03-17T23:13:59.347Z"}
-  ```
-
-
-  ```
-  screwdriver=# \d
-                    List of relations
-   Schema |         Name         |   Type   |   Owner
-  --------+----------------------+----------+-----------
-   public | banners              | table    | tichimura
-   public | banners_id_seq       | sequence | tichimura
-   public | buildClusters        | table    | tichimura
-   public | buildClusters_id_seq | sequence | tichimura
-   public | builds               | table    | tichimura
-   public | builds_id_seq        | sequence | tichimura
-   public | collections          | table    | tichimura
-   public | collections_id_seq   | sequence | tichimura
-   public | commandTags          | table    | tichimura
-   public | commandTags_id_seq   | sequence | tichimura
-   public | commands             | table    | tichimura
-   public | commands_id_seq      | sequence | tichimura
-   public | events               | table    | tichimura
-   public | events_id_seq        | sequence | tichimura
-   public | jobs                 | table    | tichimura
-   public | jobs_id_seq          | sequence | tichimura
-   public | pipelines            | table    | tichimura
-   public | pipelines_id_seq     | sequence | tichimura
-   public | secrets              | table    | tichimura
-   public | secrets_id_seq       | sequence | tichimura
-   public | steps                | table    | tichimura
-   public | steps_id_seq         | sequence | tichimura
-   public | templateTags         | table    | tichimura
-   public | templateTags_id_seq  | sequence | tichimura
-   public | templates            | table    | tichimura
-   public | templates_id_seq     | sequence | tichimura
-   public | tokens               | table    | tichimura
-   public | tokens_id_seq        | sequence | tichimura
-   public | triggers             | table    | tichimura
-   public | triggers_id_seq      | sequence | tichimura
-   public | users                | table    | tichimura
-   public | users_id_seq         | sequence | tichimura
-  (32 rows)
-
-  ```
-
-
-- Results in PostgreSQL
+- Run `npm start`, and check the updates in database
 
     ```
     % npm start
@@ -364,6 +411,8 @@
      public | users_username_scmContext_key              | index | yugabyte | users
     (69 rows)
     ```
+
+
 
 
 ### run in `store`
@@ -503,58 +552,58 @@
 
   <img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/159113929-86252e42-5061-4a8d-b788-754a11ea774d.png">
   
-    this time, not choosing the `I will create the screwdriver.yaml  later`. 
+      this time, not choosing the `I will create the screwdriver.yaml  later`. 
   
   - now it moves to Pipeline page automatically.
 
-  <img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/159113989-1710e801-ff15-43bb-abda-bed6125f9c81.png">
+    <img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/159113989-1710e801-ff15-43bb-abda-bed6125f9c81.png">
   
   - Expected Results
   
-  ![image](https://user-images.githubusercontent.com/1793451/159188926-810ab325-77ce-4220-80ea-1c27ba5568ea.png)
+    ![image](https://user-images.githubusercontent.com/1793451/159188926-810ab325-77ce-4220-80ea-1c27ba5568ea.png)
 
 
-  - [Troubleshooting] `Internal server error` has been shown like below.
+  - [Troubleshooting] `Internal server error` has been shown like below in Mac OS with Docker Desktop for Mac
   
-  <img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/159114052-a3c92abe-e667-4553-bc39-4c678602553f.png">
+    <img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/159114052-a3c92abe-e667-4553-bc39-4c678602553f.png">
   
     - console log at `screwdriver/screwdriver`
   
-    ```
-    {"level":"error","message":"Breaker with function function () { [native code] } was tripped on Sat, 19 Mar 2022 08:39:32 GMT","timestamp":"2022-03-19T08:39:32.421Z"}
-    {"level":"info","message":"Getting errors with [{\"url\":\"https://kubernetes.default/api/v1/namespaces/default/pods\",\"method\":\"POST\",\"json\":{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"name\":\"101-ye528\",\"labels\":{\"app\":\"screwdriver\",\"tier\":\"builds\",\"sdbuild\":\"101\"}},\"spec\":{\"serviceAccountName\":\"default\",\"automountServiceAccountToken\":false,\"terminationGracePeriodSeconds\":30,\"restartPolicy\":\"Never\",\"dnsPolicy\":\"ClusterFirst\",\"containers\":[{\"name\":\"101\",\"image\":\"buildpack-deps\",\"imagePullPolicy\":\"Always\",\"securityContext\":{\"privileged\":false},\"resources\":{\"limits\":{\"cpu\":\"2000m\",\"memory\":\"2Gi\"}},\"env\":[{\"name\":\"SD_HAB_ENABLED\",\"value\":\"true\"},{\"name\":\"SD_RUNTIME_CLASS\",\"value\":null},{\"name\":\"SD_PUSHGATEWAY_URL\",\"value\":null},{\"name\":\"SD_TERMINATION_GRACE_PERIOD_SECONDS\",\"value\":\"30\"},{\"name\":\"CONTAINER_IMAGE\",\"value\":\"buildpack-deps\"},{\"name\":\"SD_PIPELINE_ID\",\"value\":\"1\"},{\"name\":\"SD_BUILD_PREFIX\",\"value\":\"\"},{\"name\":\"NODE_ID\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"spec.nodeName\"}}},{\"name\":\"SD_BASE_COMMAND_PATH\",\"value\":\"/sd/commands/\"},{\"name\":\"SD_TEMP\",\"value\":\"/opt/sd_tmp\"}],\"command\":[\"/opt/sd/launcher_entrypoint.sh\"],\"args\":[\"/opt/sd/run.sh \\\"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MTAxLCJzY21Db250ZXh0IjoiZ2l0aHViOmdpdGh1Yi5jb20iLCJzY29wZSI6WyJ0ZW1wb3JhbCJdLCJpc1BSIjpmYWxzZSwiam9iSWQiOjEsImV2ZW50SWQiOjEwMSwicGlwZWxpbmVJZCI6MSwiaWF0IjoxNjQ3Njc5MTcyLCJleHAiOjE2NDc3MjIzNzIsImp0aSI6IjM1MzVhZmRjLTI1NjQtNGVjZC04OGNlLTAxNjg1NGI4ZTdjMiJ9.Td2hbLSs9C5OeSazu5NJ1Zm6QyVEcLQPIyRaZGsfItXN9_A_xYtEc1vKbe7a4HHzDcsT_qgU0rrVcQgG1dItcgydVnudFg4F-LQY0ZPcCnYn5Bh4brIV3e8ZdBleyPzOlPePYHub502AlE64waX8UpVhgGXN7J7_T9aeUIz90EDmOopc4WdYfDlGIoCFTXjxl67XnhSrdFere6IsZMuMc6Y_Sq_TpEl9otlPx5nW2Bv81BTOKbz_pvGvXIHq5ryiMvMeALLPoHo8wciVSfu3fVyVDQxQPjBgL5Meb6li_-LZDtj9nUNiFWR-hwvjDBKQTA71UQ8xNFs_39yBiTyVtA\\\" \\\"http://sd.screwdriver.cd:9001\\\" \\\"http://sd.screwdriver.cd:9002\\\" \\\"90\\\" \\\"101\\\" \\\"http://sd.screwdriver.cd:4200\\\"\\n\"],\"volumeMounts\":[{\"name\":\"podinfo\",\"mountPath\":\"/etc/podinfo\",\"readOnly\":true},{\"mountPath\":\"/opt/sd\",\"name\":\"screwdriver\",\"readOnly\":true},{\"mountPath\":\"/opt/sd_tmp\",\"name\":\"sdtemp\"},{\"mountPath\":\"/workspace\",\"name\":\"workspace\"}]}],\"initContainers\":[{\"name\":\"launcher-101\",\"image\":\"screwdrivercd/launcher:stable\",\"command\":[\"/bin/sh\",\"-c\",\"echo launcher_start_ts:`date \\\"+%s\\\"` > /workspace/metrics && if ! [ -f /opt/launcher/launch ]; then TEMP_DIR=`mktemp -d -p /opt/launcher` && cp -a /opt/sd/* $TEMP_DIR && mkdir -p $TEMP_DIR/hab && cp -a /hab/* $TEMP_DIR/hab && mv $TEMP_DIR/* /opt/launcher && rm -rf $TEMP_DIR || true; else ls /opt/launcher; fi; echo launcher_end_ts:`date \\\"+%s\\\"` >> /workspace/metrics\"],\"volumeMounts\":[{\"mountPath\":\"/opt/launcher\",\"name\":\"screwdriver\"},{\"mountPath\":\"/workspace\",\"name\":\"workspace\"}]}],\"volumes\":[{\"name\":\"podinfo\",\"downwardAPI\":{\"items\":[{\"path\":\"labels\",\"fieldRef\":{\"fieldPath\":\"metadata.labels\"}},{\"path\":\"annotations\",\"fieldRef\":{\"fieldPath\":\"metadata.annotations\"}}]}},{\"name\":\"screwdriver\",\"type\":\"DirectoryOrCreate\",\"hostPath\":{\"path\":\"/opt/screwdriver/sdlauncher/stable\"}},{\"name\":\"sdtemp\",\"type\":\"DirectoryOrCreate\",\"hostPath\":{\"path\":\"/opt/screwdriver/tmp_101\"}},{\"name\":\"workspace\",\"emptyDir\":{}}]}},\"headers\":{\"Authorization\":\"Bearer \"},\"https\":{\"rejectUnauthorized\":false}}]: Error: 500 Reason \"Internal server error\"","timestamp":"2022-03-19T08:39:32.421Z"}
-    {"level":"error","message":"Failed to run pod for build id:101: 500 Reason \"Internal server error\"","timestamp":"2022-03-19T08:39:32.423Z"}
-    220319/083932.423, (1647679168041:Tomohiros-MacBook-Pro.local:48333:l0xeswh1:10205) [request,server,error] data: Error: 500 Reason "Internal server error"
-        at throwError (/Users/tichimura/demodir/screwdriver/screwdriver/node_modules/screwdriver-request/index.js:14:17)
-        at /Users/tichimura/demodir/screwdriver/screwdriver/node_modules/screwdriver-request/index.js:56:28
-        at runMicrotasks (<anonymous>)
-        at processTicksAndRejections (internal/process/task_queues.js:95:5)
-    220319/083928.041, (1647679168041:Tomohiros-MacBook-Pro.local:48333:l0xeswh1:10205) [response,api,events] http://sd.screwdriver.cd:9001: post /v4/events {} 500 (4382ms)  
-    ```
+      ```
+      {"level":"error","message":"Breaker with function function () { [native code] } was tripped on Sat, 19 Mar 2022 08:39:32 GMT","timestamp":"2022-03-19T08:39:32.421Z"}
+      {"level":"info","message":"Getting errors with [{\"url\":\"https://kubernetes.default/api/v1/namespaces/default/pods\",\"method\":\"POST\",\"json\":{\"apiVersion\":\"v1\",\"kind\":\"Pod\",\"metadata\":{\"name\":\"101-ye528\",\"labels\":{\"app\":\"screwdriver\",\"tier\":\"builds\",\"sdbuild\":\"101\"}},\"spec\":{\"serviceAccountName\":\"default\",\"automountServiceAccountToken\":false,\"terminationGracePeriodSeconds\":30,\"restartPolicy\":\"Never\",\"dnsPolicy\":\"ClusterFirst\",\"containers\":[{\"name\":\"101\",\"image\":\"buildpack-deps\",\"imagePullPolicy\":\"Always\",\"securityContext\":{\"privileged\":false},\"resources\":{\"limits\":{\"cpu\":\"2000m\",\"memory\":\"2Gi\"}},\"env\":[{\"name\":\"SD_HAB_ENABLED\",\"value\":\"true\"},{\"name\":\"SD_RUNTIME_CLASS\",\"value\":null},{\"name\":\"SD_PUSHGATEWAY_URL\",\"value\":null},{\"name\":\"SD_TERMINATION_GRACE_PERIOD_SECONDS\",\"value\":\"30\"},{\"name\":\"CONTAINER_IMAGE\",\"value\":\"buildpack-deps\"},{\"name\":\"SD_PIPELINE_ID\",\"value\":\"1\"},{\"name\":\"SD_BUILD_PREFIX\",\"value\":\"\"},{\"name\":\"NODE_ID\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"spec.nodeName\"}}},{\"name\":\"SD_BASE_COMMAND_PATH\",\"value\":\"/sd/commands/\"},{\"name\":\"SD_TEMP\",\"value\":\"/opt/sd_tmp\"}],\"command\":[\"/opt/sd/launcher_entrypoint.sh\"],\"args\":[\"/opt/sd/run.sh \\\"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6MTAxLCJzY21Db250ZXh0IjoiZ2l0aHViOmdpdGh1Yi5jb20iLCJzY29wZSI6WyJ0ZW1wb3JhbCJdLCJpc1BSIjpmYWxzZSwiam9iSWQiOjEsImV2ZW50SWQiOjEwMSwicGlwZWxpbmVJZCI6MSwiaWF0IjoxNjQ3Njc5MTcyLCJleHAiOjE2NDc3MjIzNzIsImp0aSI6IjM1MzVhZmRjLTI1NjQtNGVjZC04OGNlLTAxNjg1NGI4ZTdjMiJ9.Td2hbLSs9C5OeSazu5NJ1Zm6QyVEcLQPIyRaZGsfItXN9_A_xYtEc1vKbe7a4HHzDcsT_qgU0rrVcQgG1dItcgydVnudFg4F-LQY0ZPcCnYn5Bh4brIV3e8ZdBleyPzOlPePYHub502AlE64waX8UpVhgGXN7J7_T9aeUIz90EDmOopc4WdYfDlGIoCFTXjxl67XnhSrdFere6IsZMuMc6Y_Sq_TpEl9otlPx5nW2Bv81BTOKbz_pvGvXIHq5ryiMvMeALLPoHo8wciVSfu3fVyVDQxQPjBgL5Meb6li_-LZDtj9nUNiFWR-hwvjDBKQTA71UQ8xNFs_39yBiTyVtA\\\" \\\"http://sd.screwdriver.cd:9001\\\" \\\"http://sd.screwdriver.cd:9002\\\" \\\"90\\\" \\\"101\\\" \\\"http://sd.screwdriver.cd:4200\\\"\\n\"],\"volumeMounts\":[{\"name\":\"podinfo\",\"mountPath\":\"/etc/podinfo\",\"readOnly\":true},{\"mountPath\":\"/opt/sd\",\"name\":\"screwdriver\",\"readOnly\":true},{\"mountPath\":\"/opt/sd_tmp\",\"name\":\"sdtemp\"},{\"mountPath\":\"/workspace\",\"name\":\"workspace\"}]}],\"initContainers\":[{\"name\":\"launcher-101\",\"image\":\"screwdrivercd/launcher:stable\",\"command\":[\"/bin/sh\",\"-c\",\"echo launcher_start_ts:`date \\\"+%s\\\"` > /workspace/metrics && if ! [ -f /opt/launcher/launch ]; then TEMP_DIR=`mktemp -d -p /opt/launcher` && cp -a /opt/sd/* $TEMP_DIR && mkdir -p $TEMP_DIR/hab && cp -a /hab/* $TEMP_DIR/hab && mv $TEMP_DIR/* /opt/launcher && rm -rf $TEMP_DIR || true; else ls /opt/launcher; fi; echo launcher_end_ts:`date \\\"+%s\\\"` >> /workspace/metrics\"],\"volumeMounts\":[{\"mountPath\":\"/opt/launcher\",\"name\":\"screwdriver\"},{\"mountPath\":\"/workspace\",\"name\":\"workspace\"}]}],\"volumes\":[{\"name\":\"podinfo\",\"downwardAPI\":{\"items\":[{\"path\":\"labels\",\"fieldRef\":{\"fieldPath\":\"metadata.labels\"}},{\"path\":\"annotations\",\"fieldRef\":{\"fieldPath\":\"metadata.annotations\"}}]}},{\"name\":\"screwdriver\",\"type\":\"DirectoryOrCreate\",\"hostPath\":{\"path\":\"/opt/screwdriver/sdlauncher/stable\"}},{\"name\":\"sdtemp\",\"type\":\"DirectoryOrCreate\",\"hostPath\":{\"path\":\"/opt/screwdriver/tmp_101\"}},{\"name\":\"workspace\",\"emptyDir\":{}}]}},\"headers\":{\"Authorization\":\"Bearer \"},\"https\":{\"rejectUnauthorized\":false}}]: Error: 500 Reason \"Internal server error\"","timestamp":"2022-03-19T08:39:32.421Z"}
+      {"level":"error","message":"Failed to run pod for build id:101: 500 Reason \"Internal server error\"","timestamp":"2022-03-19T08:39:32.423Z"}
+      220319/083932.423, (1647679168041:Tomohiros-MacBook-Pro.local:48333:l0xeswh1:10205) [request,server,error] data: Error: 500 Reason "Internal server error"
+          at throwError (/Users/tichimura/demodir/screwdriver/screwdriver/node_modules/screwdriver-request/index.js:14:17)
+          at /Users/tichimura/demodir/screwdriver/screwdriver/node_modules/screwdriver-request/index.js:56:28
+          at runMicrotasks (<anonymous>)
+          at processTicksAndRejections (internal/process/task_queues.js:95:5)
+      220319/083928.041, (1647679168041:Tomohiros-MacBook-Pro.local:48333:l0xeswh1:10205) [response,api,events] http://sd.screwdriver.cd:9001: post /v4/events {} 500 (4382ms)  
+      ```
   
-  - change host name to `host.docker.internal` for `httpd.uri`, `ecosystem.store`, `ecosystem.allowCors`
+    - change host name to `host.docker.internal` for `httpd.uri`, `ecosystem.store`, `ecosystem.allowCors`
 
-  ```
-  httpd:
-    # Port to listen on
-    port: 9001
+      ```
+      httpd:
+        # Port to listen on
+        port: 9001
 
-    host: 0.0.0.0
+        host: 0.0.0.0
 
-  #  uri: http://sd.screwdriver.cd:9001
-    uri: http://host.docker.internal:9001
+      #  uri: http://sd.screwdriver.cd:9001
+        uri: http://host.docker.internal:9001
 
-  ecosystem:
-    # Externally routable URL for the User Interface
-    ui: http://sd.screwdriver.cd:4200
+      ecosystem:
+        # Externally routable URL for the User Interface
+        ui: http://sd.screwdriver.cd:4200
 
-    # Externally routable URL for the Artifact Store
-    #store: http://sd.screwdriver.cd:9002
-    store: http://host.docker.internal:9002
+        # Externally routable URL for the Artifact Store
+        #store: http://sd.screwdriver.cd:9002
+        store: http://host.docker.internal:9002
 
-  #  allowCors: ['http://sd.screwdriver.cd', 'http://sd.screwdriver.cd:9001']
-    allowCors: ['http://sd.screwdriver.cd', 'http://host.docker.internal:9001']
-  
-  ```
+      #  allowCors: ['http://sd.screwdriver.cd', 'http://sd.screwdriver.cd:9001']
+        allowCors: ['http://sd.screwdriver.cd', 'http://host.docker.internal:9001']
+
+      ```
   
   

@@ -28,9 +28,20 @@
   arm64  
   ```
   
-  - you may need to run with x86_64 with Docker/Docker Desktop
+  - [NOTICE] if you plan to run with docker, not node/npm, you may need to run with x86_64 with Docker/Docker Desktop (executor will run as docker, but it should be fine.)
 
-- Docker Environment
+- `node` and `npm` setup ( fro ember-cli )
+
+  https://github.com/ember-cli/ember-cli/blob/master/docs/node-support.md
+   
+  ```
+  % node -v
+  v14.19.0
+  % npm -v
+  6.14.16
+  ```
+
+- Docker Environment ( for executor in `screwdriver` to run the job in pipeline )
 
   ```
   % docker version
@@ -65,16 +76,6 @@
     GitCommit:        de40ad0  
   ```
 
-- `node` and `npm` setup ( fro ember-cli )
-
-  https://github.com/ember-cli/ember-cli/blob/master/docs/node-support.md
-   
-  ```
-  % node -v
-  v14.19.0
-  % npm -v
-  6.14.16
-  ```
   
 ## configure YugabyteDB
 
@@ -456,8 +457,11 @@
 
 ## QuickStart Sample
 
-
- Refer the procedure on https://docs.screwdriver.cd/user-guide/quickstart
+- Prerequirement
+  - screwdriver(`screwdriver`, `ui`, `store`) has been running ( please see the above steps. )
+  - yugabyteDB has been running ( it should have been running for screwdriver )
+  - Docker environment has been available (in this work, we use Docker Desktop for Mac)
+  - Refer the procedure on https://docs.screwdriver.cd/user-guide/quickstart
 
 - fork, and clone the sample apps
 

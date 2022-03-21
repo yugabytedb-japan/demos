@@ -458,6 +458,7 @@
 ## QuickStart Sample
 
 - Prerequirement
+- 
   - screwdriver(`screwdriver`, `ui`, `store`) has been running ( please see the above steps. )
   - yugabyteDB has been running ( it should have been running for screwdriver )
   - Docker environment has been available (in this work, we use Docker Desktop for Mac)
@@ -535,6 +536,8 @@
         # this step
         - run_arbitrary_script: ./my_script.sh
   ```
+  
+  - the `buildpack-deps` image is inspired from Heroku's stack images. see [link](https://hub.docker.com/_/buildpack-deps?tab=description)
   
   ## Create and Start Pipeline
   

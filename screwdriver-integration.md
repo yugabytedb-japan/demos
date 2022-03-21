@@ -1,3 +1,4 @@
+# Screwdriver local deployment on Mac OS X (M1 Chip)
 
 ## Reference
 
@@ -21,6 +22,8 @@
 - architecture
 
   ```
+  % uname -v
+  Darwin Kernel Version 21.1.0: Wed Oct 13 17:33:01 PDT 2021; root:xnu-8019.41.5~1/RELEASE_ARM64_T6000  
   % uname -m
   arm64  
   ```
@@ -28,10 +31,7 @@
   - you may need to run with x86_64 with Docker/Docker Desktop
 
 
-## Screwdriver Setup
-
-### setup node and npm (for ember-cli )
-
+- `node` and `npm` setup ( fro ember-cli )
 
   https://github.com/ember-cli/ember-cli/blob/master/docs/node-support.md
    
@@ -42,9 +42,24 @@
   6.14.16
   ```
 
+## configure screwdriver
+
+### clone repositories
+
+  ```
+  git clone https://github.com/screwdriver-cd/ui.git
+  git clone https://github.com/screwdriver-cd/screwdriver.git
+  git clone https://github.com/screwdriver-cd/store.git
+  ```
+  
+  - [NOTICE] `queue-service.git` is not used for this time
+
 ### run in `ui`
 
+
  - run 'npm install'
+
+   - move to `ui` directory, and run 'npm install'
 
    ```
    % npm install
@@ -77,6 +92,9 @@
 ### run in `screwdriver`
 
 - run `npm install` at `screwdriver`
+
+   - move to `screwdriver` directory, and run 'npm install'
+
 
   ```
   % npm install
@@ -350,43 +368,47 @@
 
 ### run in `store`
 
-```
-% cd store
-tichimura@ store % npm install && npm run start
-npm WARN deprecated topo@3.0.3: This module has moved and is now available at @hapi/topo. Please update your dependencies as this version is no longer maintained an may contain bugs and security issues.
-npm WARN deprecated hoek@6.1.3: This module has moved and is now available at @hapi/hoek. Please update your dependencies as this version is no longer maintained an may contain bugs and security issues.
-npm WARN deprecated querystring@0.2.0: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
-npm WARN deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
-npm WARN deprecated hoek@5.0.3: This version has been deprecated in accordance with the hapi support policy (hapi.im/support). Please upgrade to the latest version to get the best features, bug fixes, and security patches. If you are unable to upgrade at this time, paid support is available for older versions (hapi.im/commercial).
-npm WARN deprecated boom@7.3.0: This module has moved and is now available at @hapi/boom. Please update your dependencies as this version is no longer maintained an may contain bugs and security issues.
-npm WARN deprecated catbox@10.0.6: This module has moved and is now available at @hapi/catbox. Please update your dependencies as this version is no longer maintained an may contain bugs and security issues.
-npm WARN deprecated catbox-s3@4.0.0: this package is no longer maintained
-npm WARN deprecated uuid@3.3.2: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
-npm WARN deprecated joi@14.3.1: This module has moved and is now available at @hapi/joi. Please update your dependencies as this version is no longer maintained an may contain bugs and security issues.
-npm WARN deprecated core-js@2.6.12: core-js@<3.4 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Please, upgrade your dependencies to the actual version of core-js.
+   - move to `store` directory, and run 'npm install && npm run start'
 
-added 519 packages, and audited 520 packages in 49s
+    ```
+    % npm install && npm run start
+    npm WARN deprecated topo@3.0.3: This module has moved and is now available at @hapi/topo. Please update your dependencies as this version is no longer maintained an may contain bugs and security issues.
+    npm WARN deprecated hoek@6.1.3: This module has moved and is now available at @hapi/hoek. Please update your dependencies as this version is no longer maintained an may contain bugs and security issues.
+    npm WARN deprecated querystring@0.2.0: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
+    npm WARN deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+    npm WARN deprecated hoek@5.0.3: This version has been deprecated in accordance with the hapi support policy (hapi.im/support). Please upgrade to the latest version to get the best features, bug fixes, and security patches. If you are unable to upgrade at this time, paid support is available for older versions (hapi.im/commercial).
+    npm WARN deprecated boom@7.3.0: This module has moved and is now available at @hapi/boom. Please update your dependencies as this version is no longer maintained an may contain bugs and security issues.
+    npm WARN deprecated catbox@10.0.6: This module has moved and is now available at @hapi/catbox. Please update your dependencies as this version is no longer maintained an may contain bugs and security issues.
+    npm WARN deprecated catbox-s3@4.0.0: this package is no longer maintained
+    npm WARN deprecated uuid@3.3.2: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+    npm WARN deprecated joi@14.3.1: This module has moved and is now available at @hapi/joi. Please update your dependencies as this version is no longer maintained an may contain bugs and security issues.
+    npm WARN deprecated core-js@2.6.12: core-js@<3.4 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Please, upgrade your dependencies to the actual version of core-js.
 
-70 packages are looking for funding
-  run `npm fund` for details
+    added 519 packages, and audited 520 packages in 49s
 
-9 moderate severity vulnerabilities
+    70 packages are looking for funding
+      run `npm fund` for details
 
-To address issues that do not require attention, run:
-  npm audit fix
+    9 moderate severity vulnerabilities
 
-To address all issues (including breaking changes), run:
-  npm audit fix --force
+    To address issues that do not require attention, run:
+      npm audit fix
 
-Run `npm audit` for details.
+    To address all issues (including breaking changes), run:
+      npm audit fix --force
 
-> screwdriver-store@4.0.0 start
-> ./bin/server
+    Run `npm audit` for details.
 
-{"level":"info","message":"Server running at http://localhost","timestamp":"2022-03-16T06:08:48.906Z"}
-```
+    > screwdriver-store@4.0.0 start
+    > ./bin/server
 
-## QuickStart
+    {"level":"info","message":"Server running at http://localhost","timestamp":"2022-03-16T06:08:48.906Z"}
+    ```
+
+## QuickStart Sample
+
+
+ Refer the procedure on https://docs.screwdriver.cd/user-guide/quickstart
 
 - fork, and clone the sample apps
 
@@ -461,7 +483,7 @@ Run `npm audit` for details.
         - run_arbitrary_script: ./my_script.sh
   ```
   
-  ## Quickstart
+  ## Create and Start Pipeline
   
   <img width="1487" alt="image" src="https://user-images.githubusercontent.com/1793451/159113673-5291bd6f-1b61-4177-8cae-b11ea4088aff.png">
   

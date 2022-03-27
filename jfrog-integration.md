@@ -128,8 +128,9 @@ Refer to [Documentation](https://www.jfrog.com/confluence/display/JFROG/Installi
   - For YugabyteDB, we may face errors, and may need to setup the schema manually
     
     - [TODO] 
-    - run schema (postgresql/postgresql.sql) at first, then start the installation
-    - schema can be found at $JFROG_HOME/app/artifactory/tomcat/webapps/artifactory/WEB-INF/lib/artifactory-storage-db-7.35.2.jar
+    - [ ] run schema (postgresql/postgresql.sql) at first, then start the installation
+    - [ ] schema can be found at $JFROG_HOME/app/artifactory/tomcat/webapps/artifactory/WEB-INF/lib/artifactory-storage-db-7.35.2.jar
+    - [x] dump from postgresql or existing installation, and modify some DML/DDL to fit YDB, then restore to YugabyteDB Cluster [link](#dumping-from-the-single-node-cluster-and-restore-to-new-cluster)
  
 
 ## [GOAL] schema in postgresql(postgresql@11 on OSX with `brew install`)
@@ -1056,9 +1057,81 @@ tichimura@ artifactory-storage-db-7.35.2 % ls postgresql
 postgresql.sql
 ```
 
-also work-around the `alter index`, and `create unlogging table`, `create index CONCURRENTLY` to remove the unsupported options.
-especially for `alter index`, i changed the contents to do `drop index` first, then `create index`, so the contents had been hanged to exchange the query before/after. ( query in v122 -> v123, query in v123(delete the `alter index`) -> v122...
+### Points where some modification is needed at `artifactory-storage-db-7.35.2.jar`
 
+- These are not supported in YugabyteDB
+    - `alter index`
+    - `create unlogging table`
+    - `create index CONCURRENTLY`
+    
+- Workaround
+    
+    especially for `alter index`, i changed the contents to do `drop index` first, then `create index`, so the contents had been hanged to exchange the query before/after. ( query in v122 -> v123, query in v123(delete the `alter index`) -> v122...
+    
+    - extract the jar file(artifactory-storage-db-7.35.2.jar) to working directory
+
+    - `conversion/postgresql/postgresql_v78_change_nodes_node_name_idx.sql`
+    ```
+    DROP
+    INDEX IF EXISTS nodes_node_name_idx;
+    CREATE
+    INDEX IF NOT EXISTS pattern_nodes_node_name_idx ON nodes (node_name varchar_pattern_ops);    
+    ```
+
+    - `conversion/postgresql/postgresql_v79_change_nodes_node_path_idx.sql`
+    ```
+    DROP
+    INDEX IF EXISTS nodes_node_path_idx;
+    CREATE
+    INDEX IF NOT EXISTS pattern_nodes_node_path_idx ON nodes (node_path varchar_pattern_ops);
+    ```
+        
+    - `conversion/postgresql/postgresql_v80_change_nodes_node_repo_path_idx.sql`
+    ```
+    DROP
+    INDEX IF EXISTS nodes_repo_path_name_idx;
+    CREATE
+    UNIQUE INDEX IF NOT EXISTS pattern_nodes_repo_path_name_idx ON nodes (repo varchar_pattern_ops, node_path varchar_pattern_ops, node_name varchar_pattern_ops);
+    ```
+
+    - `conversion/postgresql/postgresql_v120_prepare_change_node_props_node_prop_value_idx.sql`
+    ```
+    DROP
+    INDEX IF EXISTS node_props_node_prop_value_idx;
+    ```
+    
+    - `conversion/postgresql/postgresql_v121_alter_node_props_node_prop_value_idx.sql`
+    
+    ```
+    CREATE INDEX IF NOT EXISTS node_props_node_prop_value_idx ON node_props (node_id, prop_key varchar_pattern_ops, prop_value varchar_pattern_ops);
+    ```
+    
+    - `conversion/postgresql/postgresql_v122_prepare_change_node_props_prop_key_value_idx.sql`
+    ```
+    DROP
+    INDEX IF EXISTS node_props_prop_key_value_idx;    
+    ```
+    
+    - `conversion/postgresql/postgresql_v123_alter_node_props_prop_key_value_idx.sql`
+    ```
+    CREATE INDEX IF NOT EXISTS node_props_prop_key_value_idx ON node_props (prop_key varchar_pattern_ops, prop_value varchar_pattern_ops);
+    ```
+
+    - `conversion/postgresql/postgresql_v124_prepare_change_node_props_prop_value_key_idx.sql`
+    ```
+    DROP
+    INDEX IF EXISTS node_props_prop_value_key_idx;
+    ```
+    
+    - `conversion/postgresql/postgresql_v125_alter_node_props_prop_value_key_idx.sql`
+    ```
+    CREATE INDEX IF NOT EXISTS node_props_prop_value_key_idx ON node_props (prop_value varchar_pattern_ops, prop_key varchar_pattern_ops);
+    ```
+
+    - Then, archive as jar file, and copy to the `/artifactory/app/artifactory/tomcat/webapps/artifactory/WEB-INF/lib/`
+    
+    `jar -cf ../artifactory-storage-db-7.35.2.jar .`
+    
 log file is [here](https://gist.githubusercontent.com/tichimura/0d27498bce45bb2d43253416e2d97d93/raw/05dcbadfef93937eca0f6d74c289586e265bfece/jfrog-yb-5th-manual-db-add-console.log)
 
 

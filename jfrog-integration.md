@@ -38,7 +38,8 @@ Refer to [Documentation](https://www.jfrog.com/confluence/display/JFROG/Installi
     touch ./system.yaml
     ```
 
-    - Sample Configuration
+    - Single Node Configuration
+  
     ```
     ## @formatter:off
     ## JFROG ARTIFACTORY SYSTEM CONFIGURATION FILE
@@ -75,6 +76,31 @@ Refer to [Documentation](https://www.jfrog.com/confluence/display/JFROG/Installi
             #username: artifactory
             #password: password # password should be encrypted after the installation
     ```
+    
+    - Cluster (multi-node) Configuration
+      - jsut following the [docs](https://www.jfrog.com/confluence/display/JFROG/PostgreSQL#PostgreSQL-ConfiguringArtifactoryHAtoUsePostgreSQLDatabaseinHA)
+    
+    ```
+    shared:
+        javaHome: "/Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home"
+        ## Database Configuration
+        database:
+            ## Example for postgresql
+            type: postgresql
+            driver: org.postgresql.Driver
+            url: "jdbc:postgresql://127.0.0.1:5433,127.0.0.2:5433,127.0.0.3:5433/artifactory?targetServerType=primary"
+            username: artifactory
+            password: password
+
+    metadata:
+        database:
+            type: postgresql
+            url: "jdbc:postgresql://127.0.0.1:5433,127.0.0.2:5433,127.0.0.3:5433/artifactory?target_session_attrs=read-write"
+            driver: org.postgresql.Driver
+            username: artifactory
+            password: password
+    ```
+    
 
 1. Setup Database
 

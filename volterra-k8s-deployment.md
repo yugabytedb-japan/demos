@@ -99,9 +99,13 @@ https://docs.cloud.f5.com/docs/how-to/app-management/create-vk8s-obj
   - https://docs.yugabyte.com/preview/deploy/kubernetes/single-zone/aks/statefulset-yaml/
   
 
-- Verify the `kubeconfig` with `kubectl config --kubeconfig=./ves_default_yb-japan-k8s.yaml view`
+- Verify the `kubeconfig` with `kubectl config --kubeconfig=<DOWNLOADED_YAMLFILE> view`
 
-- Run `apply command`
+- Run `kubectl apply` command
+
+## Issues
+
+### Errors from `kubectl apply`
 
   ```
   % kubectl apply -f yugabyte-statefulset.yaml --kubeconfig=./ves_default_yb-japan-k8s.yaml  
@@ -116,11 +120,18 @@ https://docs.cloud.f5.com/docs/how-to/app-management/create-vk8s-obj
     * Specifying StorageClassName is not allowed
   ```
 
-  - It seems resource quota is too limited.
+  - k8s Limitations ( limitaion from the Free plan?)
+    - `Type LoadBalancer is not allowed`
+    - `Specifying StorageClassName is not allowed`
 
-  ```
-  % kubectl get resourcequota --kubeconfig=./ves_default_yb-japan-k8s.yaml  
-  NAME           AGE    REQUEST                                                                                                                                                                                                                                                                  LIMIT
-  yb-japan-k8s   114m   count/configmaps: 0/2, count/cronjobs.batch: 0/2, count/daemonsets.apps: 0/2, count/deployments.apps: 0/2, count/jobs.batch: 0/4, count/persistentvolumeclaims: 0/2, count/secrets: 0/2, count/serviceaccounts: 0/2, count/services: 2/2, count/statefulsets.apps: 0/2
-  ```
+  - Free Plan Limitation
+    - Resource quota is limited.
+
+    ```
+    % kubectl get resourcequota --kubeconfig=./ves_default_yb-japan-k8s.yaml  
+    NAME           AGE    REQUEST                                                                                                                                                                                                                                                                  LIMIT
+    yb-japan-k8s   114m   count/configmaps: 0/2, count/cronjobs.batch: 0/2, count/daemonsets.apps: 0/2, count/deployments.apps: 0/2, count/jobs.batch: 0/4, count/persistentvolumeclaims: 0/2, count/secrets: 0/2, count/serviceaccounts: 0/2, count/services: 2/2, count/statefulsets.apps: 0/2
+    ```
+
+    <img width="1541" alt="image" src="https://user-images.githubusercontent.com/1793451/169278809-4f9c2e27-3c02-4482-b02c-4024b8275402.png">
 

@@ -26,7 +26,7 @@ We would like to run YugabyteDB on top of that, and see the deployment options o
   See details at: https://docs.cloud.f5.com/docs/how-to/app-management/vk8s-deployment
 
 
-## 1. Create Virtual k8s object
+## Create Virtual k8s object
 - access to the console, select "Distributed Apps" > "Applications" > "Virtual K8s"
 ![image](https://user-images.githubusercontent.com/1793451/169180721-3ff09bfc-db5e-413a-9bf1-e4400b93f4ae.png)
 

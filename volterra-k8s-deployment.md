@@ -14,7 +14,7 @@ We would like to run YugabyteDB on top of that, and see the deployment options o
 
 ## Steps
 1. Create an Account
-1. [Create Virtual K8s (vK8s) Object](https://github.com/yugabytedb-japan/demos/volterra-k8s-deployment#1-create-virtual-k8s-object)
+1. [Create Virtual K8s (vK8s) Object](https://github.com/yugabytedb-japan/demos/blob/main/volterra-k8s-deployment.md#1-create-virtual-k8s-object)
 
    See details at: https://docs.cloud.f5.com/docs/how-to/app-management/create-vk8s-obj
 
@@ -22,7 +22,7 @@ We would like to run YugabyteDB on top of that, and see the deployment options o
     - Cloud or Edge site ( -> we use `RE`, so skipped it )
     - [Create a Virtual Site](https://docs.cloud.f5.com/docs/how-to/fleets-vsites/create-virtual-site) ( -> we will setup in vK8s object )
  
-1. [Create vk8s Deployment](https://github.com/yugabytedb-japan/demos/new/main#create-vk8s-deployment)
+1. [Create vk8s Deployment](https://github.com/yugabytedb-japan/demos//blob/main/volterra-k8s-deployment.md#create-vk8s-deployment)
   See details at: https://docs.cloud.f5.com/docs/how-to/app-management/vk8s-deployment
 
 

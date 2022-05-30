@@ -135,3 +135,29 @@ https://docs.cloud.f5.com/docs/how-to/app-management/create-vk8s-obj
 
     <img width="1541" alt="image" src="https://user-images.githubusercontent.com/1793451/169278809-4f9c2e27-3c02-4482-b02c-4024b8275402.png">
 
+    - Chaning to `Individual` paid plan
+    
+    ```
+    kubectl apply -f yugabyte-statefulset.yaml --kubeconfig=./ves_default_yb-japan-k8s.yaml
+    service/yb-masters created
+    service/yb-tservers created
+    Error from server: error when creating "yugabyte-statefulset.yaml": admission webhook "default.ves.io" denied the request: Service Type LoadBalancer is not allowed, only ClusterIP is allowed
+    Error from server: error when creating "yugabyte-statefulset.yaml": admission webhook "default.ves.io" denied the request: 1 error occurred:
+      * Specifying StorageClassName is not allowed
+
+
+    Error from server: error when creating "yugabyte-statefulset.yaml": admission webhook "default.ves.io" denied the request: Service Type LoadBalancer is not allowed, only ClusterIP is allowed
+    Error from server: error when creating "yugabyte-statefulset.yaml": admission webhook "default.ves.io" denied the request: 1 error occurred:
+      * Specifying StorageClassName is not allowed
+    ```
+
+    - Changing yaml
+    ```
+    kubectl apply -f yugabyte-statefulset-edit.yaml --kubeconfig=./ves_default_yb-japan-k8s.yaml 
+    service/yb-masters unchanged
+    service/yb-master-ui created
+    statefulset.apps/yb-master created
+    service/yb-tservers unchanged
+    service/yb-db-service created
+    statefulset.apps/yb-tserver created
+    ```

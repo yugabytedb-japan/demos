@@ -103,6 +103,12 @@ https://docs.cloud.f5.com/docs/how-to/app-management/create-vk8s-obj
 
 - Run `kubectl apply` command
 
+- [Option] set the context
+
+  ```
+   kubectl config --kubeconfig=./ves_default_yb-japan-k8s.yaml use-context yb-japan-k8s
+  ```
+
 ## Issues
 
 ### Errors from `kubectl apply`

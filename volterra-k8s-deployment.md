@@ -167,3 +167,6 @@ https://docs.cloud.f5.com/docs/how-to/app-management/create-vk8s-obj
     service/yb-db-service created
     statefulset.apps/yb-tserver created
     ```
+    
+    - References
+    https://docs.yugabyte.com/preview/deploy/kubernetes/clients/#yb-master-admin-ui

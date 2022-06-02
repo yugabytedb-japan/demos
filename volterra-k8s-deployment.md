@@ -167,6 +167,57 @@ https://docs.cloud.f5.com/docs/how-to/app-management/create-vk8s-obj
     service/yb-db-service created
     statefulset.apps/yb-tserver created
     ```
-    
+
     - References
     https://docs.yugabyte.com/preview/deploy/kubernetes/clients/#yb-master-admin-ui
+
+
+## [WIP] Helm installation
+
+- issues in `PodDisruptionBudget`
+
+```
+% helm install yb-demo yugabytedb/yugabyte \
+--version 2.13.2 \
+--set resource.master.requests.cpu=0.5,resource.master.requests.memory=0.5Gi,\
+resource.tserver.requests.cpu=0.5,resource.tserver.requests.memory=0.5Gi,\
+replicas.master=1,replicas.tserver=1,enableLoadBalancer=False --namespace default
+Error: INSTALLATION FAILED: unable to build kubernetes objects from release manifest: unable to recognize "": no matches for kind "PodDisruptionBudget" in version "policy/v1beta1"
+```
+
+- checking kubernetes version
+
+```
+ % kubectl version                 
+Client Version: version.Info{Major:"1", Minor:"21", GitVersion:"v1.21.5", GitCommit:"aea7bbadd2fc0cd689de94a54e5b7b758869d691", GitTreeState:"clean", BuildDate:"2021-09-15T21:10:45Z", GoVersion:"go1.16.8", Compiler:"gc", Platform:"darwin/arm64"}
+Server Version: version.Info{Major:"", Minor:"", GitVersion:"v0.0.0-master+$Format:%H$", GitCommit:"26d8a526dd25dbe26ae7e56b0d3482c82784b45f", GitTreeState:"clean", BuildDate:"2022-02-03T14:02:51Z", GoVersion:"go1.16.10", Compiler:"gc", Platform:"linux/amd64"}
+error: could not parse pre-release/metadata (-master+$Format:%H$) in version "v0.0.0-master+$Format:%H$"
+```
+
+- supported version
+
+```
+Note: The supported Kubernetes version is v1.19.
+```
+
+
+- Resource is limited
+
+https://docs.cloud.f5.com/docs/reference/vks-api-comp
+
+```
+In case of network cloud Regional Edge (RE) sites, a vK8s CPU and memory resource limit is supported per RE site. If that is exceeded, no new Pods can be instantiated on the RE site.
+```
+
+https://console.ves.volterra.io/web/workspaces/billing/manage/usage_plan -> See Quota
+
+
+<img width="570" alt="image" src="https://user-images.githubusercontent.com/1793451/171520593-2804caca-5832-424d-b776-037e24b949c9.png">
+
+<img width="571" alt="image" src="https://user-images.githubusercontent.com/1793451/171520618-cb93adc2-f697-41e3-affc-c57e3c466f32.png">
+
+
+
+
+https://docs.cloud.f5.com/docs/reference/vks-api-comp
+

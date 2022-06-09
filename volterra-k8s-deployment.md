@@ -108,6 +108,12 @@ https://docs.cloud.f5.com/docs/how-to/app-management/create-vk8s-obj
   ```
    kubectl config --kubeconfig=./ves_default_yb-japan-k8s.yaml use-context yb-japan-k8s
   ```
+ 
+- [Environment Variable]
+
+  ```
+  /home/tichimura/volterra/ves_default_yb-japan-k8s.yaml:/home/tichimura/.kube/config
+  ```
 
 ## Issues
 
@@ -220,4 +226,16 @@ https://console.ves.volterra.io/web/workspaces/billing/manage/usage_plan -> See 
 
 
 https://docs.cloud.f5.com/docs/reference/vks-api-comp
+
+
+
+## TIPS
+
+
+![image](https://user-images.githubusercontent.com/1793451/172742183-70612841-26fa-4f54-8d46-51007ea98bd4.png)
+
+![image](https://user-images.githubusercontent.com/1793451/172742203-b90a0edf-f992-4164-86af-d77c17058908.png)
+
+
+
 

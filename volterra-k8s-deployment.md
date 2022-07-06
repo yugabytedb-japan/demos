@@ -228,6 +228,94 @@ https://console.ves.volterra.io/web/workspaces/billing/manage/usage_plan -> See 
 https://docs.cloud.f5.com/docs/reference/vks-api-comp
 
 
+---
+## Deployment with CE
+
+---
+## Env from pods spec
+```
+  "spec": {
+  ...
+        "env": [
+          {
+            "name": "GET_HOSTS_FROM",
+            "value": "dns"
+          },
+          {
+            "name": "POD_IP",
+            "valueFrom": {
+              "fieldRef": {
+                "apiVersion": "v1",
+                "fieldPath": "status.podIP"
+              }
+            }
+          },
+          {
+            "name": "POD_NAME",
+            "valueFrom": {
+              "fieldRef": {
+                "apiVersion": "v1",
+                "fieldPath": "metadata.name"
+              }
+            }
+          },
+          {
+            "name": "NAMESPACE",
+            "valueFrom": {
+              "fieldRef": {
+                "apiVersion": "v1",
+                "fieldPath": "metadata.namespace"
+              }
+            }
+          },
+          {
+            "name": "DOMAIN",
+            "value": "ap-northeast-2.compute.internal"
+          },
+          {
+            "name": "HOST_OS_VERSION",
+            "value": "centos-7-2003-13"
+          },
+          {
+            "name": "HW_MODEL",
+            "value": "t3-2xlarge"
+          },
+          {
+            "name": "HW_SERIAL_NUMBER",
+            "value": "ec23679c-34a2-f9c9-eefb-7ad431adcd19"
+          },
+          {
+            "name": "HW_VENDOR",
+            "value": "amazon-ec2"
+          },
+          {
+            "name": "HW_VERSION"
+          },
+          {
+            "name": "PREF",
+            "value": "osaka"
+          },
+          {
+            "name": "PROVIDER",
+            "value": "AWS"
+          },
+          {
+            "name": "VES_IO_FLEET"
+          },
+          {
+            "name": "VES_IO_PROVIDER",
+            "value": "ves-io-AWS"
+          },
+          {
+            "name": "VES_IO_SITENAME",
+            "value": "yb-aws-soul-vpc"
+          },
+          {
+            "name": "VES_IO_SITETYPE",
+            "value": "ves-io-ce"
+          }
+        ],
+```
 
 ## TIPS
 

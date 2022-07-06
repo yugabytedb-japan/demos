@@ -317,6 +317,14 @@ https://docs.cloud.f5.com/docs/reference/vks-api-comp
         ],
 ```
 
+## DNS in volterra envorinment
+```
+sh-4.2# cat /etc/resolv.conf         
+nameserver 100.127.192.10
+search yb-cluster.svc.yb-aws-soul-vpc.volterra-hbxhkvft.tenant.local svc.yb-aws-soul-vpc.volterra-hbxhkvft.tenant.local yb-aws-soul-vpc.volterra-hbxhkvft.tenant.local
+options ndots:5
+```
+
 ## TIPS
 
 
